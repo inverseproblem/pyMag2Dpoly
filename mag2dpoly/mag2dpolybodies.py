@@ -1,7 +1,5 @@
 
-
 import numpy as np
-from dataclasses import dataclass
 
 #########################################        
 
@@ -12,51 +10,6 @@ def _arccotangent(theta):
     assert theta != 0.0
     return np.arctan2(1,theta)
 
-#########################################
-
-
-class BodySegments2D:
-    def __init__(self,idx1,vertices):
-        assert vertices.shape[1]==2
-        ## circular shift to get second set of indices
-        idx2 = np.roll(idx1,-1)
-        ## first set of vertices
-        self.ver1 = vertices[idx1,:].view()
-        ## second set of vertices
-        self.ver2 = vertices[idx2,:].view()
-        self.nsegm = self.ver1.shape[0]
-
-#########################################
-
-class MagPolyBodies2D:
-    """
-    Class containing a set of polygonal bodies described by their segments and all vertices.
-    To create an instance, input an array of vectors of indices 
-    (of vertices) for each body and the array of all the vertices.
-    """
-    def __init__(self,bodyindices,allvert):
-        assert allvert.shape[1]==2
-        ## array of all vertices for all bodies
-        self.allvert = allvert
-        N=bodyindices.size
-        ## array of bodies defined by their vertices
-        self.bodies = zeros(N,dtype=object)
-        for i in range(N):
-            self.bodies[i] = BodySegments2D(bosyindices[i],self.allvert)
-
-#########################################
-
-@dataclass
-class MagnetizVector:
-    """
-    Class containing the components of a magnetization vector, 
-    i.e., module, inclination and declination angles.
-    """
-    mod: float
-    Ideg: float
-    Ddeg: float
-
-## mv = MagnetizVector(2.0,3.2,4.9)
 #########################################
 
 def checkanticlockwiseorder(body):
@@ -361,7 +314,7 @@ def tmagkrav(x1,z1,x2,z2,Jtotx,Jtotz,Iind,Dind,Cnorth):
         return 0.0
     
     # Check if log argument strictly positive    
-    if r1==0.0 || r2==0.0 :
+    if r1==0.0 or r2==0.0 :
         return 0.0
     else :
         lor21 = np.log(r2/r1)
@@ -490,10 +443,10 @@ def tmagwonbev(x1,z1,x2,z2,modJind,modJrem,Iind,Dind,Irem,Drem,C):
         test = x1*z2 - x2*z1
         if test > 0.0 :
             if z1 >= 0.0 :
-                theta2 = theta2 + 2np.pi
+                theta2 = theta2 + 2*np.pi
         elif test < 0.0 :
             if z2 >= 0.0 :
-                theta1 = theta1 + 2np.pi
+                theta1 = theta1 + 2*np.pi
         else :
             return 0.0 
 
@@ -541,38 +494,3 @@ def tmagwonbev(x1,z1,x2,z2,modJind,modJrem,Iind,Dind,Irem,Drem,C):
 
 ###################################################################################
 
-def magcomp(modJind,Iind,Dind,modJrem,Irem,Drem,C):
-    """
-    Vector addition of magnetic (remnant + induced) components.
-    """    
-    ## Induced magnetization components
-    Jix = modJind*np.cos(Iind)*np.cos(C-Dind)
-    Jiy = modJind*np.cos(Iind)*np.sin(C-Dind)
-    Jiz = modJind*np.sin(Iind)
-
-    ## Remnant magnetization components
-    Jrx = modJrem*np.cos(Irem)*np.cos(C-Drem)
-    Jry = modJrem*np.cos(Irem)*np.sin(C-Drem)
-    Jrz = modJrem*np.sin(Irem)
-
-    ## Vector addition    
-    Jtotx = Jix+Jrx
-    Jtoty = Jiy+Jry
-    Jtotz = Jiz+Jrz
-   
-    return Jtotx,Jtoty,Jtotz
-
-##############################################
-
-def convert_H_to_B_nT( H_Am ) :
-    """
-    Convert from the field H (A/m) to B (nT).
-    """
-    ## permeabilita' del vuoto 
-    ## muzero = 4.0 * pi * 10.0^-7
-    ## B nanoTesla
-    ## B_nT = ( muzero * H_Am ) * 10.0^9
-    B_nT =  np.pi * 400.0 * H_Am 
-    return B_nT
-
-############################################################3
