@@ -325,8 +325,8 @@ def tmagkrav(x1,z1,x2,z2,Jtotx,Jtotz,Iind,Dind,Cnorth):
     Q = (gammaz**2)*lor21 - delta*gammax*gammaz*(alphadiff)
     
     ## horizonatl and vertical field components
-    H = 1.0/(2.0*pi) * (Jtotz*Q + Jtotx*P)
-    V = 1.0/(2.0*pi) * (Jtotx*Q - Jtotz*P)
+    H = 1.0/(2.0*np.pi) * (Jtotz*Q + Jtotx*P)
+    V = 1.0/(2.0*np.pi) * (Jtotx*Q - Jtotz*P)
     
     ## total field anomaly 
     totfield = V*np.sin(Iind)+H*np.cos(Iind)*np.cos(Cnorth-Dind)
@@ -440,7 +440,7 @@ def tmagwonbev(x1,z1,x2,z2,modJind,modJrem,Iind,Dind,Irem,Drem,C):
     else :
         theta2 = np.arctan2(z2,x2)
 
-    if sign(z1) != np.sign(z2):
+    if np.sign(z1) != np.sign(z2):
         test = x1*z2 - x2*z1
         if test > 0.0 :
             if z1 >= 0.0 :
