@@ -1,4 +1,6 @@
 
+import numpy as np
+
 ############################################################3
 
 def magcomp(modJind,Iind,Dind,modJrem,Irem,Drem,C):

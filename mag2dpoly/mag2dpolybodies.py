@@ -1,5 +1,6 @@
 
 import numpy as np
+from .magutils import magcomp,convert_H_to_B_nT
 
 #########################################        
 
@@ -103,7 +104,7 @@ def tmagpoly2D(xzobs,Jind,Jrem,northxax,body,forwardtype):
     ##-------------------------------------
     ## Loop on observation points and segments
     nobs = xzobs.shape[0]
-    totfield = zeros(nobs)
+    totfield = np.zeros(nobs)
 
     ## loop on observation points
     for iob in range(nobs):
@@ -141,8 +142,8 @@ def tmagtalwani(x1,z1,x2,z2,Jx,Jz,Iind,Dind,C):
     r2 = np.sqrt(x2**2+z2**2)
 
     # Get the angles
-    theta1 = atan(z1,x1)
-    theta2 = atan(z2,x2)
+    theta1 = np.arctan2(z1,x1)
+    theta2 = np.arctan2(z2,x2)
     
     # If z21 = 0.0 no contribution    
     if z21 != 0.0 :
@@ -232,7 +233,7 @@ def tmagpoly2Dgen(xzobs,Jind,Jrem,northxax,body,forwardtype) :
     ##-------------------------------------
     ## Loop on observation points and segments
     nobs = xzobs.shape[0]
-    totfield = zeros(nobs)
+    totfield = np.zeros(nobs)
 
     ## loop on observation points
     for iob in range(nobs):
@@ -432,12 +433,12 @@ def tmagwonbev(x1,z1,x2,z2,modJind,modJrem,Iind,Dind,Irem,Drem,C):
     if x1 == 0.0 and z1 == 0.0 :
         return 0.0
     else :
-        theta1 = atan(z1,x1)
+        theta1 = np.arctan2(z1,x1)
         
     if x2 == 0.0 and z2 == 0.0 :
         return 0.0
     else :
-        theta2 = atan(z2,x2)
+        theta2 = np.arctan2(z2,x2)
 
     if sign(z1) != np.sign(z2):
         test = x1*z2 - x2*z1

@@ -1,5 +1,5 @@
 
-
+import numpy as np
 from dataclasses import dataclass
 
 #########################################
@@ -27,11 +27,13 @@ class MagPolyBodies2D:
         assert allvert.shape[1]==2
         ## array of all vertices for all bodies
         self.allvert = allvert
+        # bodyindices must be an array of arrays
+        assert type(bodyindices[0])==np.ndarray
         N=bodyindices.size
         ## array of bodies defined by their vertices
-        self.bodies = zeros(N,dtype=object)
+        self.bo = np.zeros(N,dtype=np.object)
         for i in range(N):
-            self.bodies[i] = BodySegments2D(bosyindices[i],self.allvert)
+            self.bo[i] = BodySegments2D(bodyindices[i],self.allvert)
 
 #########################################
 
