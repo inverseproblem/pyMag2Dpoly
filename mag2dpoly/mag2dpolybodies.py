@@ -413,16 +413,16 @@ def tmagwonbev(x1,z1,x2,z2,modJind,modJrem,Iind,Dind,Irem,Drem,C):
     """
 
     # β is angle among North and profle direction
-    betai = -((C - Dind) - np.deg2rad(90.0))
-    betar = -((C - Drem) - np.deg2rad(90.0))
+    betai = Dind - C + np.pi/2
+    betar = Drem - C + np.pi/2
     
     #-------------------
     x21 = x2-x1
     z21 = z2-z1
 
-    # if the segment is horizontal it provides no contribution!
-    if z21 == 0.0 :
-        return 0.0
+    # # if the segment is horizontal it provides no contribution!
+    # if z21 == 0.0 :
+    #     return 0.0
     
     R  = np.sqrt(x21**2+z21**2)
     r1 = np.sqrt(x1**2+z1**2)
@@ -471,11 +471,13 @@ def tmagwonbev(x1,z1,x2,z2,modJind,modJrem,Iind,Dind,Irem,Drem,C):
         derZx = -((x21*z21)/(R**2))*((theta1 - theta2) + g*lor21) + Q
         derXz = -((x21**2)/(R**2))*(g*(theta1 - theta2) - lor21) + Q
         derXx = ((x21*z21)/(R**2))*(g*(theta1 - theta2) - lor21) + P
+        
     else :
+
         derZz = -P
         derZx = -((z21**2)/(R**2))*lor21 + Q
         derXz = Q
-        derXx = ((z21**2)/(R**2))*(theta1 - theta2) + P
+        derXx = ((z21**2)/(R**2))*(theta1 - theta2) + P  
 
     # Magnetic strenght components due to induced magnetization
     DELTAHzind = 2.0*modJind*(np.sin(Iind)*derZz + np.sin(betai)*np.cos(Iind)*derZx) 
