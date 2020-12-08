@@ -146,7 +146,7 @@ def tmagtalwani(x1,z1,x2,z2,Jx,Jz,Iind,Dind,C):
     z21 = z2-z1
     s = np.sqrt(x21**2+z21**2)
 
-    # Error and return if two corners are too close
+    # Return 0 if two corners are too close
     if s < small :
         return 0.0
 
@@ -309,7 +309,7 @@ def tmagkrav(x1,z1,x2,z2,Jtotx,Jtotz,Iind,Dind,Cnorth):
     z21 = z2-z1
     tmpgamma = np.sqrt(x21**2+z21**2)
 
-    # Error and return if two corners are too close
+    # Return 0 if two corners are too close
     if tmpgamma < small :
         return 0.0
 
@@ -395,7 +395,7 @@ def tmagtalwanired(x1,z1,x2,z2,Jx,Jz,Iind,Dind,C):
     z21 = z2-z1
     s = np.sqrt(x21**2+z21**2)
     
-    # Error and return if two corners are too close
+    # Return 0 if two corners are too close
     if s < small :
         return 0.0
 
@@ -496,7 +496,7 @@ def tmagwonbev(x1,z1,x2,z2,modJind,modJrem,Iind,Dind,Irem,Drem,C):
     z21 = z2-z1
 
     R  = np.sqrt(x21**2+z21**2)
-    # Error and return if two corners are too close
+    # Return 0 if two corners are too close
     if R < small :
         return 0.0
 
