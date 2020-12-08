@@ -518,8 +518,8 @@ def tmagwonbev(x1,z1,x2,z2,modJind,modJrem,Iind,Dind,Irem,Drem,C):
 
     lor21 = np.log(r2) - np.log(r1)
 
-    theta1 = np.atan2(z1,x1) 
-    theta2 = np.atan2(z2,x2)
+    theta1 = np.arctan2(z1,x1) 
+    theta2 = np.arctan2(z2,x2)
 
     # In the case polygon sides cross the x axis
     if np.sign(z1) != np.sign(z2):
@@ -534,6 +534,7 @@ def tmagwonbev(x1,z1,x2,z2,modJind,modJrem,Iind,Dind,Irem,Drem,C):
             return 0.0 
 
     # Error if the side is too close to the observation point (calculation continues)
+    thetadiff = theta1-theta2
     if abs(thetadiff) > anglelim :
         warnings.warn("A polygon side is too close to an observation point (calculation continues)")
 
