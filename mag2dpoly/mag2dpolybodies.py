@@ -1,6 +1,7 @@
 
 import numpy as np
 from .magutils import magcomp,convert_H_to_B_nT
+import warnings
 
 #########################################        
 
@@ -134,12 +135,20 @@ def tmagtalwani(x1,z1,x2,z2,Jx,Jz,Iind,Dind,C):
     """
     Total magnetic field (2D) for a line segment. Formulas from Talwani & Heitzler (1964).
     """    
+
+    # Quantities for error definitions
+    eps = np.finfo(np.float64).eps
+    small = 1e4*eps
+    anglelim = 0.995*np.pi
+
     #--------------
     x21 = x2-x1
     z21 = z2-z1
-  
-    r1 = np.sqrt(x1**2+z1**2)
-    r2 = np.sqrt(x2**2+z2**2)
+    s = np.sqrt(x21**2+z21**2)
+
+    # Error and return if two corners are too close
+    if s < small :
+        return 0.0
 
     # Get the angles
     theta1 = np.arctan2(z1,x1)
@@ -152,19 +161,35 @@ def tmagtalwani(x1,z1,x2,z2,Jx,Jz,Iind,Dind,C):
         return 0.0
 
     phi = _arccotangent(g)
-    thetadiff = theta2-theta1 
 
+    thetadiff = theta2-theta1
     # In the case polygon sides cross the x axis
     if thetadiff < -np.pi :
         thetadiff = thetadiff + 2.0*np.pi
     elif thetadiff > np.pi :
         thetadiff = thetadiff - 2.0*np.pi
+           
+    # Error if a corner is too close to the observation point (calculation continues)
+    # and the corner are slightly moved away
+    if (x1 < small) and (z1 < small) :
+        x1 = small
+        z1 = small
+        warnings.warn("A corner is too close to an observation point (calculation continues)")
+    
+    if (x2 < small) and (z2 < small) :
+        x2 = small
+        z2 = small
+        warnings.warn("A corner is too close to an observation point (calculation continues)")
 
-    # Check if log argument strictly positive
-    if r1==0.0 or r2==0.0 :
-        return 0.0
-    else :
-        flog = np.log(r2)-np.log(r1)
+    ########
+    r1 = np.sqrt(x1**2+z1**2)
+    r2 = np.sqrt(x2**2+z2**2)
+
+    flog = np.log(r2)-np.log(r1)
+ 
+    # Error if the side is too close to the observation point (calculation continues)
+    if abs(thetadiff) > anglelim :
+        warnings.warn("A polygon side is too close to an observation point (calculation continues)")
 
     # vertical component
     V = 2.0*np.sin(phi) * (Jx*( (thetadiff)*np.cos(phi) + np.sin(phi)*flog) - \
@@ -273,11 +298,28 @@ def tmagkrav(x1,z1,x2,z2,Jtotx,Jtotz,Iind,Dind,Cnorth):
     """
     Total magnetic field (2D) for a line segment. Formulas from Kravchinsky et al (2019) rectified by Ghirotto et al. (2021). 
     """
+    
+    # Quantities for error definitions
+    eps = np.finfo(np.float64).eps
+    small = 1e4*eps
+    anglelim = 0.995*np.pi
 
     #--------------
     x21 = x2-x1
     z21 = z2-z1
+    tmpgamma = np.sqrt(x21**2+z21**2)
 
+    # Error and return if two corners are too close
+    if tmpgamma < small :
+        return 0.0
+
+    # check if den != 0.0
+    if tmpgamma!=0.0 :
+        gammax = x21 / tmpgamma
+        gammaz = z21 / tmpgamma
+    else :
+        return 0.0    
+    
     # if the segment is horizontal it provides no contribution!
     if z21==0.0:
         return 0.0
@@ -302,24 +344,28 @@ def tmagkrav(x1,z1,x2,z2,Jtotx,Jtotz,Iind,Dind,Cnorth):
     elif alphadiff > np.pi :
         alphadiff = alphadiff - 2.0*np.pi
 
+    # Error if a corner is too close to the observation point (calculation continues)
+    # and the corner are slightly moved away
+    if (x1 < small) and (z1 < small) :
+        x1 = small
+        z1 = small
+        warnings.warn("A corner is too close to an observation point (calculation continues)")
+    
+    if (x2 < small) and (z2 < small) :
+        x2 = small
+        z2 = small
+        warnings.warn("A corner is too close to an observation point (calculation continues)")
+
+        
     r1 = np.sqrt(x1**2+z1**2)
     r2 = np.sqrt(x2**2+z2**2)
 
-    tmpgamma = np.sqrt(x21**2+z21**2)
+    lor21 = np.log(r2)-np.log(r1)
 
-    # check if den ≠ 0.0
-    if tmpgamma!=0.0 :
-        gammax = x21 / tmpgamma
-        gammaz = z21 / tmpgamma
-    else :
-        return 0.0
-    
-    # Check if log argument strictly positive    
-    if r1==0.0 or r2==0.0 :
-        return 0.0
-    else :
-        lor21 = np.log(r2/r1)
-    
+    # Error if the side is too close to the observation point (calculation continues)
+    if abs(alphadiff) > anglelim :
+        warnings.warn("A polygon side is too close to an observation point (calculation continues)")
+  
     #--------------------
     P = gammaz*gammax*lor21 + delta*(gammaz**2)*(alphadiff)
     Q = (gammaz**2)*lor21 - delta*gammax*gammaz*(alphadiff)
@@ -339,20 +385,26 @@ def tmagtalwanired(x1,z1,x2,z2,Jx,Jz,Iind,Dind,C):
     """ 
     Total magnetic field (2D) for a ribbon. Talwani & Heitzler (1964) modified by Kravchinsky et al. (2019).
     """
-
+    # Quantities for error definitions
+    eps = np.finfo(np.float64).eps
+    small = 1e4*eps
+    anglelim = 0.995*np.pi
+    
     #--------------
     x21 = x2-x1
     z21 = z2-z1
-
-    r1 = np.sqrt(x1**2+z1**2)
-    r2 = np.sqrt(x2**2+z2**2)
+    s = np.sqrt(x21**2+z21**2)
+    
+    # Error and return if two corners are too close
+    if s < small :
+        return 0.0
 
     # if the segment is horizontal it provides no contribution!
     if z21 != 0.0:
         g = -x21/z21
     else:
         return 0.0
-        
+
     phi = _arccotangent(g)
     
     den1 = x1+z1*_cotangent(phi)
@@ -385,12 +437,29 @@ def tmagtalwanired(x1,z1,x2,z2,Jx,Jz,Iind,Dind,C):
     elif thetadiff > np.pi :
         thetadiff = thetadiff - 2.0*np.pi
 
-    #Check if log argument strictly positive
-    if r1==0.0 or r2==0.0 :
-        return 0.0
-    else :
-        flog = np.log(r2)-np.log(r1)
+    # Error if a corner is too close to the observation point (calculation continues)
+    # and the corner are slightly moved away
+    if (x1 < small) and (z1 < small) :
+        x1 = small
+        z1 = small
+        warnings.warn("A corner is too close to an observation point (calculation continues)")
+    
+    if (x2 < small) and (z2 < small) :
+        x2 = small
+        z2 = small
+        warnings.warn("A corner is too close to an observation point (calculation continues)")
 
+    ########  
+    r1 = np.sqrt(x1**2+z1**2)
+    r2 = np.sqrt(x2**2+z2**2)
+
+    flog = np.log(r2)-np.log(r1)
+    
+    # Error if the side is too close to the observation point (calculation continues)
+    if abs(thetadiff) > anglelim :
+        warnings.warn("A polygon side is too close to an observation point (calculation continues)")
+
+        
     # vertical component    
     V = 2.0*np.sin(phi) * (Jx * (delta*(thetadiff)*np.cos(phi) + np.sin(phi)*flog)- \
                     Jz * (delta*(thetadiff)*np.sin(phi) - np.cos(phi)*flog) )
@@ -412,6 +481,12 @@ def tmagwonbev(x1,z1,x2,z2,modJind,modJrem,Iind,Dind,Irem,Drem,C):
     Total magnetic field (2D) for a line segment. Formulas from Won & Bevis (1987).
     """
 
+    
+    # Quantities for error definitions
+    eps = np.finfo(np.float64).eps
+    small = 1e4*eps
+    anglelim = 0.995*np.pi
+
     # β is angle among North and profle direction
     betai = Dind - C + np.pi/2
     betar = Drem - C + np.pi/2
@@ -420,26 +495,33 @@ def tmagwonbev(x1,z1,x2,z2,modJind,modJrem,Iind,Dind,Irem,Drem,C):
     x21 = x2-x1
     z21 = z2-z1
 
-    # # if the segment is horizontal it provides no contribution!
-    # if z21 == 0.0 :
-    #     return 0.0
-    
     R  = np.sqrt(x21**2+z21**2)
+    # Error and return if two corners are too close
+    if R < small :
+        return 0.0
+
+    # Error if a corner is too close to the observation point (calculation continues)
+    # and the corner are slightly moved away
+    if (x1 < small) and (z1 < small) :
+        x1 = small
+        z1 = small
+        warnings.warn("A corner is too close to an observation point (calculation continues)")
+    
+    if (x2 < small) and (z2 < small) :
+        x2 = small
+        z2 = small
+        warnings.warn("A corner is too close to an observation point (calculation continues)")
+
+    ###
     r1 = np.sqrt(x1**2+z1**2)
     r2 = np.sqrt(x2**2+z2**2)
 
-    # Controls on angles definitions (see Won & Bevis, 1987)
-    #------------------------
-    if x1 == 0.0 and z1 == 0.0 :
-        return 0.0
-    else :
-        theta1 = np.arctan2(z1,x1)
-        
-    if x2 == 0.0 and z2 == 0.0 :
-        return 0.0
-    else :
-        theta2 = np.arctan2(z2,x2)
+    lor21 = np.log(r2) - np.log(r1)
 
+    theta1 = np.atan2(z1,x1) 
+    theta2 = np.atan2(z2,x2)
+
+    # In the case polygon sides cross the x axis
     if np.sign(z1) != np.sign(z2):
         test = x1*z2 - x2*z1
         if test > 0.0 :
@@ -451,13 +533,11 @@ def tmagwonbev(x1,z1,x2,z2,modJind,modJrem,Iind,Dind,Irem,Drem,C):
         else :
             return 0.0 
 
-    #------------------------
+    # Error if the side is too close to the observation point (calculation continues)
+    if abs(thetadiff) > anglelim :
+        warnings.warn("A polygon side is too close to an observation point (calculation continues)")
 
-    #Check if log argument strictly positive
-    if r1 == 0.0 or r2 == 0.0 :
-        return 0.0
-    else :
-        lor21 = np.log(r2) - np.log(r1)
+    #------------------------
     
     P = (1/R**2)*(x1*z2 - x2*z1)*(((x1*x21 - z1*z21)/(r1**2))- \
                                  ((x2*x21 - z2*z21)/(r2**2)))
