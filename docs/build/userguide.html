@@ -1,0 +1,282 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>User guide &mdash; pyMag2DPoly 0.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API, list of functions" href="apilist.html" />
+    <link rel="prev" title="pyMag2DPoly’s documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> pyMag2DPoly
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#theoretical-background">Theoretical Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tutorial">Tutorial</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="apilist.html">API, list of functions</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyMag2DPoly</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>User guide</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/userguide.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="user-guide">
+<h1>User guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="theoretical-background">
+<h2>Theoretical Background<a class="headerlink" href="#theoretical-background" title="Permalink to this headline">¶</a></h2>
+<p>For a theoretical explanation, let us consider a three-dimensional non-magnetic
+space in which a body infinitely extended in the <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> direction is immersed.</p>
+<p>The common aim of all formulations is the calculation of the magnetic field of
+this body upon an observation point (<span class="math notranslate nohighlight">\(\mathbf{x}_0\)</span> , <span class="math notranslate nohighlight">\(\mathbf{z}_0\)</span>) located along a profile aligned to
+the <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> direction (the positive <span class="math notranslate nohighlight">\(\mathbf{z}\)</span> axis is assumed pointing downward).</p>
+<p>The starting assumption is that our body can be considered as discretized by an
+infinite number of uniformly-magnetized elementary volumes with infinitesimal dimensions <span class="math notranslate nohighlight">\(\mathbf{dz}\)</span>, <span class="math notranslate nohighlight">\(\mathbf{dy}\)</span>, <span class="math notranslate nohighlight">\(\mathbf{dz}\)</span>.</p>
+<p>Within this assumption, the magnetic field associated to the body can be mathematically
+expressed in terms of a line integral around its periphery, represented in two dimensions
+as its polygonal cross-section (in red).</p>
+<img alt="_images/intro.svg" src="_images/intro.svg" /></div>
+<div class="section" id="tutorial">
+<h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h2>
+<p>First load the module and define some magnetization vectors,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mag2dpoly</span> <span class="k">as</span> <span class="nn">mag</span>
+
+<span class="c1"># induced magnetization</span>
+<span class="n">Jind</span> <span class="o">=</span> <span class="n">mag</span><span class="o">.</span><span class="n">MagnetizVector</span><span class="p">(</span><span class="n">mod</span><span class="o">=</span><span class="mf">4.9</span><span class="p">,</span><span class="n">Ideg</span><span class="o">=</span><span class="mf">90.0</span><span class="p">,</span><span class="n">Ddeg</span><span class="o">=</span><span class="mf">45.0</span><span class="p">)</span>
+<span class="c1"># remanent magnetization</span>
+<span class="n">Jrem</span> <span class="o">=</span> <span class="n">mag</span><span class="o">.</span><span class="n">MagnetizVector</span><span class="p">(</span><span class="n">mod</span><span class="o">=</span><span class="mf">3.1</span><span class="p">,</span><span class="n">Ideg</span><span class="o">=</span><span class="mf">45.0</span><span class="p">,</span><span class="n">Ddeg</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and then define some observation points</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># angle with the North axis</span>
+<span class="n">northxax</span> <span class="o">=</span> <span class="mf">90.0</span>
+
+<span class="c1"># number of observation</span>
+<span class="n">Nobs</span> <span class="o">=</span> <span class="mi">101</span>
+<span class="n">xzobs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">100.0</span><span class="p">,</span><span class="n">Nobs</span><span class="p">),</span> <span class="o">-</span><span class="mf">1.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">Nobs</span><span class="p">))))</span>
+</pre></div>
+</div>
+<p>Finally the general list of vertices of the poligonal bodies and the relative indices mapping each body to its vertices:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># vertices of the poligonal bodies</span>
+<span class="n">vertices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="p">[</span><span class="mf">35.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mf">65.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mf">80.0</span><span class="p">,</span> <span class="mf">35.0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mf">65.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mf">35.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">35.0</span><span class="p">]</span> <span class="p">])</span>
+
+<span class="c1"># indices of vertices for the body</span>
+<span class="n">nbod</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">bodyindices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">nbod</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">object</span><span class="p">)</span>
+<span class="n">inds</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">bodyindices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span>
+
+<span class="c1"># construct the poligonal body object</span>
+<span class="n">pbody</span> <span class="o">=</span> <span class="n">mag</span><span class="o">.</span><span class="n">MagPolyBodies2D</span><span class="p">(</span><span class="n">bodyindices</span><span class="p">,</span><span class="n">vertices</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>At this point the total field can be computed. We select <cite>“talwani”</cite> as the forward type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># type of forward algorithm</span>
+<span class="n">forwardtype</span> <span class="o">=</span> <span class="s2">&quot;talwani&quot;</span>
+
+<span class="c1"># compute total field</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nbody</span><span class="p">):</span>
+    <span class="n">tmag</span> <span class="o">+=</span> <span class="n">mag</span><span class="o">.</span><span class="n">tmagpoly2Dgen</span><span class="p">(</span><span class="n">xzobs</span><span class="p">,</span><span class="n">Jind</span><span class="p">,</span><span class="n">Jrem</span><span class="p">,</span><span class="n">northxax</span><span class="p">,</span><span class="n">pbody</span><span class="o">.</span><span class="n">bo</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">forwardtype</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we can plot the results:</p>
+<img alt="_images/plotex1.svg" src="_images/plotex1.svg" /></div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="apilist.html" class="btn btn-neutral float-right" title="API, list of functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="pyMag2DPoly’s documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Andrea Zunino, Alessandro Ghirotto
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

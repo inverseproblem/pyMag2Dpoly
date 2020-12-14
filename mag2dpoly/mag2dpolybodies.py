@@ -1,4 +1,3 @@
-
 import numpy as np
 from .magutils import magcomp,convert_H_to_B_nT
 import warnings
