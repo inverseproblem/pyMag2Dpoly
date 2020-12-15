@@ -5,6 +5,10 @@ from dataclasses import dataclass
 #########################################
 
 class BodySegments2D:
+    """
+    Class containing the segments of a polygonal body. 
+    To create an instance a set of indices have to be passed on.
+    """
     def __init__(self,idx1,vertices):
         assert vertices.shape[1]==2
         ## circular shift to get second set of indices
@@ -38,11 +42,11 @@ class MagPolyBodies2D:
 #########################################
 
 @dataclass
-class MagnetizVector:
+class MagnetizVector: 
     """
     Class containing the components of a magnetization vector, 
     i.e., module, inclination and declination angles.
-    """
+    """  
     mod: float
     Ideg: float
     Ddeg: float

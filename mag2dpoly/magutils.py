@@ -26,7 +26,7 @@ def magcomp(modJind,Iind,Dind,modJrem,Irem,Drem,C):
 
 ##############################################
 
-def convert_H_to_B_nT( H_Am ) :
+def convert_H_to_B_nT( H_Am ):
     """
     Convert from the field H (A/m) to B (nT).
     """
@@ -37,4 +37,13 @@ def convert_H_to_B_nT( H_Am ) :
     B_nT =  np.pi * 400.0 * H_Am 
     return B_nT
 
-############################################################3
+###############################################
+
+def convert_B_nT_to_H( B_nT ):
+    """
+    Convert from the field B (nT) to H (A/m).
+    """
+    H_Am = B_nT / (pi * 400.0)
+    return H_Am
+
+###############################################

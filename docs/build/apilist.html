@@ -86,12 +86,12 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="userguide.html">User guide</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API, list of functions</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#data-structures">Data structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-mag2dpoly.magdatastruct">Data structures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#forward-functions">Forward functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#single-polygonal-body">Single polygonal body</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#multiple-polygonal-bodies">Multiple polygonal bodies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#forward-algorithms-alone">Forward algorithms alone</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#useful-functions">Useful functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mag2dpoly.magutils">Useful functions</a></li>
 </ul>
 </li>
 </ul>
@@ -163,12 +163,34 @@
             
   <div class="section" id="api-list-of-functions">
 <h1>API, list of functions<a class="headerlink" href="#api-list-of-functions" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="data-structures">
-<h2>Data structures<a class="headerlink" href="#data-structures" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-mag2dpoly.magdatastruct">
+<span id="data-structures"></span><h2>Data structures<a class="headerlink" href="#module-mag2dpoly.magdatastruct" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="mag2dpoly.magdatastruct.BodySegments2D">
+<em class="property">class </em><code class="sig-name descname">BodySegments2D</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx1</span></em>, <em class="sig-param"><span class="n">vertices</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mag2dpoly/magdatastruct.html#BodySegments2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mag2dpoly.magdatastruct.BodySegments2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class containing the segments of a polygonal body. 
+To create an instance a set of indices have to be passed on.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="mag2dpoly.magdatastruct.MagPolyBodies2D">
+<em class="property">class </em><code class="sig-name descname">MagPolyBodies2D</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bodyindices</span></em>, <em class="sig-param"><span class="n">allvert</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mag2dpoly/magdatastruct.html#MagPolyBodies2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mag2dpoly.magdatastruct.MagPolyBodies2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class containing a set of polygonal bodies described by their segments and all vertices.
+To create an instance, input an array of vectors of indices 
+(of vertices) for each body and the array of all the vertices.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="mag2dpoly.magdatastruct.MagnetizVector">
+<em class="property">class </em><code class="sig-name descname">MagnetizVector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mod</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">Ideg</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">Ddeg</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mag2dpoly/magdatastruct.html#MagnetizVector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mag2dpoly.magdatastruct.MagnetizVector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class containing the components of a magnetization vector, 
+i.e., module, inclination and declination angles.</p>
+</dd></dl>
+
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Vertices of the polygonal bodies must be provided
-counterclockwise to the function <cite>BodySegments2D</cite>
+counterclockwise to the function <code class="docutils literal notranslate"><span class="pre">BodySegments2D</span></code>
 to perform magnetic anomaly calculation using the
 functions in the next section <strong>Forward functions</strong></p>
 </div>
@@ -177,24 +199,118 @@ functions in the next section <strong>Forward functions</strong></p>
 <h2>Forward functions<a class="headerlink" href="#forward-functions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="single-polygonal-body">
 <h3>Single polygonal body<a class="headerlink" href="#single-polygonal-body" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt>
+<code class="sig-name descname">tmagpoly2D</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xzobs</span></em>, <em class="sig-param"><span class="n">Jind</span></em>, <em class="sig-param"><span class="n">Jrem</span></em>, <em class="sig-param"><span class="n">northxax</span></em>, <em class="sig-param"><span class="n">body</span></em>, <em class="sig-param"><span class="n">forwardtype</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mag2dpoly/mag2dpolybodies.html#tmagpoly2D"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Total magnetic field (2D) for a polygon defined by its corners. Takes into account both induced and remnant magnetization.
+Based on Talwani &amp; Heitzler (1964), the default algorithm in pyMag2DPoly.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-name descname">tmagpoly2Dgen</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xzobs</span></em>, <em class="sig-param"><span class="n">Jind</span></em>, <em class="sig-param"><span class="n">Jrem</span></em>, <em class="sig-param"><span class="n">northxax</span></em>, <em class="sig-param"><span class="n">body</span></em>, <em class="sig-param"><span class="n">forwardtype</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mag2dpoly/mag2dpolybodies.html#tmagpoly2Dgen"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Total magnetic field (2D) for a polygon defined by its corners. Takes into account both induced and remnant magnetization.
+Generic version containing four different algorithm formulations <code class="docutils literal notranslate"><span class="pre">forwardtype</span></code>, passed as a string:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>“talwani”      –&gt; Talwani &amp; Heitzler (1964)</p></li>
+<li><p>“talwani_red”  –&gt; Talwani &amp; Heitzler (1964) rederived from Kravchinsky et al. 2019</p></li>
+<li><p>“krav”         –&gt; Kravchinsky et al. (2019) rectified by Ghirotto et al. (2020)</p></li>
+<li><p>“wonbev”       –&gt; Won &amp; Bevis (1987)</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 </div>
 <div class="section" id="multiple-polygonal-bodies">
 <h3>Multiple polygonal bodies<a class="headerlink" href="#multiple-polygonal-bodies" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt>
+<code class="sig-name descname">tmagpolybodies2D</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xzobs</span></em>, <em class="sig-param"><span class="n">Jinds</span></em>, <em class="sig-param"><span class="n">Jrems</span></em>, <em class="sig-param"><span class="n">northxax</span></em>, <em class="sig-param"><span class="n">bodies</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mag2dpoly/mag2dpolybodies.html#tmagpolybodies2D"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Total magnetic field (2D) for a set of polygonal bodies defined by their corners. 
+Takes into account both induced and remnant magnetization.
+Based on Talwani &amp; Heitzler (1964), the default algorithm in Mag2Dpoly package.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-name descname">tmagpolybodies2Dgen</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xzobs</span></em>, <em class="sig-param"><span class="n">Jinds</span></em>, <em class="sig-param"><span class="n">Jrems</span></em>, <em class="sig-param"><span class="n">northxax</span></em>, <em class="sig-param"><span class="n">bodies</span></em>, <em class="sig-param"><span class="n">forwardtype</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mag2dpoly/mag2dpolybodies.html#tmagpolybodies2Dgen"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Total magnetic field (2D) for a set of polygonal bodies defined by their corners. 
+Takes into account both induced and remnant magnetization.
+Generic version containing four different algorithm formulations <code class="docutils literal notranslate"><span class="pre">forwardtype</span></code>, passed as a string:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>“talwani”      –&gt; Talwani &amp; Heitzler (1964)</p></li>
+<li><p>“talwani_red”  –&gt; Talwani &amp; Heitzler (1964) rederived from Kravchinsky et al. 2019</p></li>
+<li><p>“krav”         –&gt; Kravchinsky et al. (2019) rectified by Ghirotto et al. (2020)</p></li>
+<li><p>“wonbev”       –&gt; Won &amp; Bevis (1987)</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
 </div>
 <div class="section" id="forward-algorithms-alone">
 <h3>Forward algorithms alone<a class="headerlink" href="#forward-algorithms-alone" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt>
+<code class="sig-name descname">tmagkrav</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">z1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">z2</span></em>, <em class="sig-param"><span class="n">Jtotx</span></em>, <em class="sig-param"><span class="n">Jtotz</span></em>, <em class="sig-param"><span class="n">Iind</span></em>, <em class="sig-param"><span class="n">Dind</span></em>, <em class="sig-param"><span class="n">Cnorth</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mag2dpoly/mag2dpolybodies.html#tmagkrav"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Total magnetic field (2D) for a line segment. Formulas from Kravchinsky et al (2019) rectified by Ghirotto et al. (2021).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-name descname">tmagtalwani</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">z1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">z2</span></em>, <em class="sig-param"><span class="n">Jx</span></em>, <em class="sig-param"><span class="n">Jz</span></em>, <em class="sig-param"><span class="n">Iind</span></em>, <em class="sig-param"><span class="n">Dind</span></em>, <em class="sig-param"><span class="n">C</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mag2dpoly/mag2dpolybodies.html#tmagtalwani"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Total magnetic field (2D) for a line segment. Formulas from Talwani &amp; Heitzler (1964).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-name descname">tmagtalwanired</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">z1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">z2</span></em>, <em class="sig-param"><span class="n">Jx</span></em>, <em class="sig-param"><span class="n">Jz</span></em>, <em class="sig-param"><span class="n">Iind</span></em>, <em class="sig-param"><span class="n">Dind</span></em>, <em class="sig-param"><span class="n">C</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mag2dpoly/mag2dpolybodies.html#tmagtalwanired"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Total magnetic field (2D) for a ribbon. Talwani &amp; Heitzler (1964) modified by Kravchinsky et al. (2019).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-name descname">tmagwonbev</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">z1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">z2</span></em>, <em class="sig-param"><span class="n">modJind</span></em>, <em class="sig-param"><span class="n">modJrem</span></em>, <em class="sig-param"><span class="n">Iind</span></em>, <em class="sig-param"><span class="n">Dind</span></em>, <em class="sig-param"><span class="n">Irem</span></em>, <em class="sig-param"><span class="n">Drem</span></em>, <em class="sig-param"><span class="n">C</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mag2dpoly/mag2dpolybodies.html#tmagwonbev"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Total magnetic field (2D) for a line segment. Formulas from Won &amp; Bevis (1987).</p>
+</dd></dl>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>These functions are not exported. To call them
-type <cite>Mag2Dpoly.</cite> before the name of the functions.</p>
+type <code class="docutils literal notranslate"><span class="pre">mag2dpoly.</span></code> before the name of the functions.</p>
 </div>
 </div>
-<div class="section" id="useful-functions">
-<h3>Useful functions<a class="headerlink" href="#useful-functions" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="module-mag2dpoly.magutils">
+<span id="useful-functions"></span><h3>Useful functions<a class="headerlink" href="#module-mag2dpoly.magutils" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="mag2dpoly.magutils.convert_B_nT_to_H">
+<code class="sig-name descname">convert_B_nT_to_H</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">B_nT</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mag2dpoly/magutils.html#convert_B_nT_to_H"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mag2dpoly.magutils.convert_B_nT_to_H" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from the field B (nT) to H (A/m).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mag2dpoly.magutils.convert_H_to_B_nT">
+<code class="sig-name descname">convert_H_to_B_nT</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">H_Am</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mag2dpoly/magutils.html#convert_H_to_B_nT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mag2dpoly.magutils.convert_H_to_B_nT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert from the field H (A/m) to B (nT).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mag2dpoly.magutils.magcomp">
+<code class="sig-name descname">magcomp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">modJind</span></em>, <em class="sig-param"><span class="n">Iind</span></em>, <em class="sig-param"><span class="n">Dind</span></em>, <em class="sig-param"><span class="n">modJrem</span></em>, <em class="sig-param"><span class="n">Irem</span></em>, <em class="sig-param"><span class="n">Drem</span></em>, <em class="sig-param"><span class="n">C</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mag2dpoly/magutils.html#magcomp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mag2dpoly.magutils.magcomp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Vector addition of magnetic (remnant + induced) components.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-name descname">checkanticlockwiseorder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">body</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mag2dpoly/mag2dpolybodies.html#checkanticlockwiseorder"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Check whether the polygonal body has segments ordered anticlockwise.</p>
+</dd></dl>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>These functions are not exported. To call them
-type <cite>Mag2Dpoly.</cite> before the name of the functions.</p>
+type <code class="docutils literal notranslate"><span class="pre">mag2dpoly.</span></code> before the name of the functions.</p>
 </div>
 </div>
 </div>

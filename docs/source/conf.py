@@ -12,9 +12,10 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
-import os
+import os 
 import sys
-sys.path.append('D:\\PROGETTI_DOTTORATO_GHIROTTO\\2019_2020\\MAG\\Python\\pyMag2DPoly\\mag2dpoly')
+sys.path.insert(0, os.path.abspath('../..'))
+
 
 # -- Project information -----------------------------------------------------
 
@@ -77,6 +78,10 @@ exclude_patterns = []
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
 
+# If true, the current module name will be prepended to all description
+# unit titles (such as .. function::).
+add_module_names = False
+
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -110,7 +115,7 @@ html_theme =  'sphinx_rtd_theme' #'alabaster'
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Mag2DPolydoc'
+htmlhelp_basename = 'pyMag2DPolydoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -137,7 +142,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'Mag2DPoly.tex', 'Mag2DPoly Documentation',
+    (master_doc, 'pyMag2DPoly.tex', 'pyMag2DPoly Documentation',
      'Andrea Zunino, Alessandro Ghirotto', 'manual'),
 ]
 
@@ -147,7 +152,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'mag2dpoly', 'Mag2DPoly Documentation',
+    (master_doc, 'mag2dpoly', 'pyMag2DPoly Documentation',
      [author], 1)
 ]
 
@@ -158,8 +163,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'Mag2DPoly', 'Mag2DPoly Documentation',
-     author, 'Mag2DPoly', 'One line description of project.',
+    (master_doc, 'pyMag2DPoly', 'pyMag2DPoly Documentation',
+     author, 'pyMag2DPoly', 'One line description of project.',
      'Miscellaneous'),
 ]
 

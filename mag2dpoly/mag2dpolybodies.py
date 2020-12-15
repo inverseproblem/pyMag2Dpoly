@@ -11,7 +11,42 @@ def _arccotangent(theta):
     assert theta != 0.0
     return np.arctan2(1,theta)
 
-#########################################
+
+########################################################################
+
+def tmagpolybodies2D(xzobs,Jinds,Jrems,northxax,bodies):
+    """
+    Total magnetic field (2D) for a set of polygonal bodies defined by their corners. 
+    Takes into account both induced and remnant magnetization.
+    Based on Talwani & Heitzler (1964), the default algorithm in Mag2Dpoly package. 
+    """
+    tmag = np.zeros(eltype(Jinds[1].mod),size(xzobs,1))
+    for ise in range(bodies.bo):
+        tmag += tmagpoly2Dgen(xzobs,Jinds[ise],Jrems[ise],northxax,bodies.bo[ise])
+    
+    return tmag
+    
+
+###################################################################################
+
+def tmagpolybodies2Dgen(xzobs,Jinds,Jrems,northxax,bodies,forwardtype):
+    """
+    Total magnetic field (2D) for a set of polygonal bodies defined by their corners. 
+    Takes into account both induced and remnant magnetization.
+    Generic version containing four different algorithm formulations ``forwardtype``, passed as a string:
+     - "talwani"      --> Talwani & Heitzler (1964)
+     - "talwani_red"  --> Talwani & Heitzler (1964) rederived from Kravchinsky et al. 2019
+     - "krav"         --> Kravchinsky et al. (2019) rectified by Ghirotto et al. (2020)
+     - "wonbev"       --> Won & Bevis (1987)
+    """
+    tmag = np.zeros(eltype(Jinds[1].mod),size(xzobs,1))
+    for ise in range(bodies.bo):
+        tmag += tmagpoly2Dgen(xzobs,Jinds[ise],Jrems[ise],northxax,bodies.bo[ise],forwardtype)
+    
+    return tmag
+
+
+###################################################################################
 
 def checkanticlockwiseorder(body):
     """
@@ -67,7 +102,7 @@ def checkanticlockwiseorder(body):
 def tmagpoly2D(xzobs,Jind,Jrem,northxax,body,forwardtype):
     """
     Total magnetic field (2D) for a polygon defined by its corners. Takes into account both induced and remnant magnetization.
-    Based on Talwani & Heitzler (1964), the default algorithm in MagAnom. 
+    Based on Talwani & Heitzler (1964), the default algorithm in pyMag2DPoly. 
     """
     aclockw = checkanticlockwiseorder(body)
 
@@ -209,11 +244,11 @@ def tmagtalwani(x1,z1,x2,z2,Jx,Jz,Iind,Dind,C):
 def tmagpoly2Dgen(xzobs,Jind,Jrem,northxax,body,forwardtype) :
     """
     Total magnetic field (2D) for a polygon defined by its corners. Takes into account both induced and remnant magnetization.
-    Generic version containing four different algorithm formulations `forwardtype`, passed as a string:
-    - "talwani"      --> Talwani & Heitzler (1964)
-    - "talwani_red"  --> Talwani & Heitzler (1964) rederived from Kravchinsky et al. 2019
-    - "krav"         --> Kravchinsky et al. (2019) rectified by Ghirotto et al. (2020)
-    - "wonbev"       --> Won & Bevis (1987)
+    Generic version containing four different algorithm formulations ``forwardtype``, passed as a string:
+     - "talwani"      --> Talwani & Heitzler (1964)
+     - "talwani_red"  --> Talwani & Heitzler (1964) rederived from Kravchinsky et al. 2019
+     - "krav"         --> Kravchinsky et al. (2019) rectified by Ghirotto et al. (2020)
+     - "wonbev"       --> Won & Bevis (1987)
     """
 
     ## LOOPING on segments MUST be in ANTI-CLOCKWISE order
