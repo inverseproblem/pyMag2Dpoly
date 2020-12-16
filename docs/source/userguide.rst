@@ -79,6 +79,8 @@ At this point the total field can be computed. We select `"talwani"` as the forw
    forwardtype = "talwani"
    
    # compute total field 
+   nbody = pbody.bo.size
+   tmag = 0.0
    for i in range(nbody):
        tmag += mag.tmagpoly2Dgen(xzobs,Jind,Jrem,northxax,pbody.bo[i],forwardtype)
 
