@@ -40,9 +40,11 @@ def test1():
     tmag = np.zeros((xzobs.shape[0],nfwd))
     nbody = pbody.bo.size
 
+    Jindv = np.array([Jind]) 
+    Jremv = np.array([Jrem])
+
     for (f,fwdt) in enumerate(forwardtype):
-        for i in range(nbody):
-            tmag[:,f] += mag.tmagpoly2Dgen(xzobs,Jind,Jrem,northxax,pbody.bo[i],forwardtype[f])
+        tmag[:,f] = mag.tmagpolybodies2Dgen(xzobs,Jindv,Jremv,northxax,pbody,forwardtype[f])
 
     ##=========================================
 
