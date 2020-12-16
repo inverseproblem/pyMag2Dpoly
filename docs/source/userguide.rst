@@ -85,6 +85,22 @@ At this point the total field can be computed. We select `"talwani"` as the forw
 
 Now we can plot the results:
 
+.. code::
+
+   # plot
+   import matplotlib.pyplot as plt
+
+   plt.figure()
+   plt.subplot(211)
+   plt.title("Magnetic anomaly")
+   plt.plot(xzobs[:,0],tmag,"o-")
+   plt.subplot(212)
+   plt.title("Polygonal body")
+   x = np.append(pbody.bo[0].ver1[:,0],pbody.bo[0].ver1[0,0])
+   y = np.append(pbody.bo[0].ver1[:,1],pbody.bo[0].ver1[0,1])
+   plt.plot(x,y,"o-")
+   plt.show()
+   
 .. image:: images/plotex1.svg
  
 
