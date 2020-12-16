@@ -42,10 +42,10 @@ pbody = mag.MagPolyBodies2D(bodyindices,vertices)
 forwardtype = "talwani"
 
 # compute total field
-nbody = pbody.bo.size
-tmag = 0.0
-for i in range(nbody):
-    tmag += mag.tmagpoly2Dgen(xzobs,Jind,Jrem,northxax,pbody.bo[i],forwardtype)
+# make Jind and Jrem arrays of objects (as many as there are bodies)
+Jindv = np.array([Jind]) # we have one single body in this case
+Jremv = np.array([Jrem]) # we have one single body in this case
+tmag = mag.tmagpolybodies2Dgen(xzobs,Jindv,Jremv,northxax,pbody,forwardtype)
 
 
 ## plot
