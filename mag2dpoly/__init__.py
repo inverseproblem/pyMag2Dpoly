@@ -1,6 +1,6 @@
 
 
-
+__version__ = '0.2.0'
 
 
 from .magdatastruct import BodySegments2D,MagPolyBodies2D,MagnetizVector

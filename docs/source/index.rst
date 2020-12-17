@@ -29,7 +29,13 @@ To download and install the package use "pip3" or "pip" in the following ways:
 
 .. code-block:: python
 
-    pip3 install pyMag2DPoly
+    pip3 install Mag2DPoly
+
+or locally, providing the path to the directory Mag2DPoly
+
+.. code-block:: python
+
+    pip3 install path/to/Mag2DPoly
 
 or
 

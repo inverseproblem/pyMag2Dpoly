@@ -1,9 +1,10 @@
 
 
 from setuptools import setup, find_packages
+from mag2dpoly import __version__
 
 setup(
-    version="0.2.0",
+    version= __version__,
     name="Mag2DPoly",
     author="Andrea Zunino, Alessandro Ghirotto",
     description="Forward magnetic anomaly calculation due to two-dimensional polygonal bodies with uniform arbitrary polarization",
