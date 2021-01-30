@@ -1,7 +1,7 @@
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://inverseproblem.github.io/pyMag2Dpoly)
 ![CI](https://github.com/inverseproblem/pyMag2Dpoly/workflows/CI/badge.svg)
 
-# pyMag2DPoly #
+# pyMag2Dpoly #
 
 pyMag2Dpoly is a Python package conceived for forward magnetic anomaly calculation due to two-dimensional polygonal bodies with uniform arbitrary polarization. Docs: https://inverseproblem.github.io/pyMag2Dpoly
 
