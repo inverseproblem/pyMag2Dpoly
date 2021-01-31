@@ -38,9 +38,9 @@ jobs:
       run: |
         pytest
         
-deploy:
-  runs-on: ubuntu-latest
-  steps:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
     - uses: actions/checkout@v2
 
     - name: Setup Python
