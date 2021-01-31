@@ -9,7 +9,9 @@ The formulations implemented in this package are that of Talwani & Heirtzler (19
 
 If you use this code for research or else, please cite the related paper:
 
-Ghirotto A., Zunino A., Armadillo E. and Mosegaard K. Magnetic anomalies caused by 2D polygonal structures with uniform arbitrary polarization: new insights from analytical/numerical comparison among available algorithm formulations, GRL, under review.
+Ghirotto A., Zunino A., Armadillo E. and Mosegaard K. 
+**Magnetic anomalies caused by 2D polygonal structures with uniform arbitrary polarization: new insights from analytical/numerical comparison among available algorithm formulations**,
+GRL, under review.
 
 
 
