@@ -1,0 +1,815 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>mag2dpoly.mag2dpolybodies &mdash; pyMag2DPoly 0.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> pyMag2DPoly
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../apilist.html">API, list of functions</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pyMag2DPoly</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>mag2dpoly.mag2dpolybodies</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for mag2dpoly.mag2dpolybodies</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">.magutils</span> <span class="kn">import</span> <span class="n">magcomp</span><span class="p">,</span><span class="n">convert_H_to_B_nT</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="c1">#########################################        </span>
+
+<span class="k">def</span> <span class="nf">_cotangent</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_arccotangent</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">theta</span> <span class="o">!=</span> <span class="mf">0.0</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">theta</span><span class="p">)</span>
+
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="tmagpolybodies2D"><a class="viewcode-back" href="../../apilist.html#mag2dpoly.mag2dpolybodies.tmagpolybodies2D">[docs]</a><span class="k">def</span> <span class="nf">tmagpolybodies2D</span><span class="p">(</span><span class="n">xzobs</span><span class="p">,</span><span class="n">Jinds</span><span class="p">,</span><span class="n">Jrems</span><span class="p">,</span><span class="n">northxax</span><span class="p">,</span><span class="n">bodies</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Total magnetic field (2D) for a set of polygonal bodies defined by their corners. </span>
+<span class="sd">    Takes into account both induced and remnant magnetization.</span>
+<span class="sd">    Based on Talwani &amp; Heitzler (1964), the default algorithm in Mag2Dpoly package. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tmag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">xzobs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">ise</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bodies</span><span class="o">.</span><span class="n">bo</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+        <span class="n">tmag</span> <span class="o">+=</span> <span class="n">tmagpoly2Dgen</span><span class="p">(</span><span class="n">xzobs</span><span class="p">,</span><span class="n">Jinds</span><span class="p">[</span><span class="n">ise</span><span class="p">],</span><span class="n">Jrems</span><span class="p">[</span><span class="n">ise</span><span class="p">],</span><span class="n">northxax</span><span class="p">,</span><span class="n">bodies</span><span class="o">.</span><span class="n">bo</span><span class="p">[</span><span class="n">ise</span><span class="p">])</span>
+    
+    <span class="k">return</span> <span class="n">tmag</span></div>
+    
+
+<span class="c1">###################################################################################</span>
+
+<div class="viewcode-block" id="tmagpolybodies2Dgen"><a class="viewcode-back" href="../../apilist.html#mag2dpoly.mag2dpolybodies.tmagpolybodies2Dgen">[docs]</a><span class="k">def</span> <span class="nf">tmagpolybodies2Dgen</span><span class="p">(</span><span class="n">xzobs</span><span class="p">,</span><span class="n">Jinds</span><span class="p">,</span><span class="n">Jrems</span><span class="p">,</span><span class="n">northxax</span><span class="p">,</span><span class="n">bodies</span><span class="p">,</span><span class="n">forwardtype</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Total magnetic field (2D) for a set of polygonal bodies defined by their corners. </span>
+<span class="sd">    Takes into account both induced and remnant magnetization.</span>
+<span class="sd">    Generic version containing four different algorithm formulations ``forwardtype``, passed as a string:</span>
+<span class="sd">    - &quot;talwani&quot;      --&gt; Talwani &amp; Heitzler (1964)</span>
+<span class="sd">    - &quot;talwani_red&quot;  --&gt; Talwani &amp; Heitzler (1964) rederived from Kravchinsky et al. 2019</span>
+<span class="sd">    - &quot;krav&quot;         --&gt; Kravchinsky et al. (2019) rectified by Ghirotto et al. (2020)</span>
+<span class="sd">    - &quot;wonbev&quot;       --&gt; Won &amp; Bevis (1987)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tmag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">xzobs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">ise</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bodies</span><span class="o">.</span><span class="n">bo</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+        <span class="n">tmag</span> <span class="o">+=</span> <span class="n">tmagpoly2Dgen</span><span class="p">(</span><span class="n">xzobs</span><span class="p">,</span><span class="n">Jinds</span><span class="p">[</span><span class="n">ise</span><span class="p">],</span><span class="n">Jrems</span><span class="p">[</span><span class="n">ise</span><span class="p">],</span><span class="n">northxax</span><span class="p">,</span><span class="n">bodies</span><span class="o">.</span><span class="n">bo</span><span class="p">[</span><span class="n">ise</span><span class="p">],</span><span class="n">forwardtype</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">tmag</span></div>
+
+
+<span class="c1">###################################################################################</span>
+
+<div class="viewcode-block" id="checkanticlockwiseorder"><a class="viewcode-back" href="../../apilist.html#mag2dpoly.mag2dpolybodies.checkanticlockwiseorder">[docs]</a><span class="k">def</span> <span class="nf">checkanticlockwiseorder</span><span class="p">(</span><span class="n">body</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether the polygonal body has segments ordered anticlockwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">## https://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-points-are-in-clockwise-order</span>
+    <span class="c1">## https://www.element84.com/blog/determining-the-winding-of-a-polygon-given-as-a-set-of-ordered-points</span>
+    <span class="c1">#</span>
+    <span class="c1"># Check direction (anti)clockwise for a reference</span>
+    <span class="c1">#   system like the following:</span>
+    <span class="c1">#</span>
+    <span class="c1">#   z</span>
+    <span class="c1">#  /\ </span>
+    <span class="c1">#  |      2</span>
+    <span class="c1">#  |   1     3</span>
+    <span class="c1">#  |      4</span>
+    <span class="c1">#  |</span>
+    <span class="c1">#  -------------&gt; x</span>
+    <span class="c1">#</span>
+    <span class="n">encarea2</span><span class="o">=</span><span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">ise</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">body</span><span class="o">.</span><span class="n">nsegm</span><span class="p">):</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">ver1</span><span class="p">[</span><span class="n">ise</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">z1</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">ver1</span><span class="p">[</span><span class="n">ise</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> 
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">ver2</span><span class="p">[</span><span class="n">ise</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">z2</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">ver2</span><span class="p">[</span><span class="n">ise</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">encarea2</span> <span class="o">+=</span> <span class="p">(</span><span class="n">x2</span><span class="o">-</span><span class="n">x1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">z2</span><span class="o">+</span><span class="n">z1</span><span class="p">)</span>
+
+    <span class="c1"># anticlockwise -&gt; encarea2 &lt; 0.0</span>
+    <span class="c1"># clockwise -&gt; encarea2 &gt; 0.0</span>
+    <span class="k">if</span> <span class="n">encarea2</span><span class="o">&lt;</span><span class="mf">0.0</span><span class="p">:</span>
+        <span class="n">anticlockw</span><span class="o">=</span><span class="kc">True</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="n">anticlockw</span><span class="o">=</span><span class="kc">False</span>
+    <span class="c1">#</span>
+    <span class="c1"># The reference system for the magnetic anomaly functions</span>
+    <span class="c1">#   is reversed in z:</span>
+    <span class="c1">#</span>
+    <span class="c1">#  -------------&gt; x</span>
+    <span class="c1">#  |</span>
+    <span class="c1">#  |      4</span>
+    <span class="c1">#  |   1     3</span>
+    <span class="c1">#  |      2</span>
+    <span class="c1">#  \/</span>
+    <span class="c1">#  z</span>
+    <span class="c1">#</span>
+    <span class="c1"># so, consequently, we flip the direction of</span>
+    <span class="c1"># clockwise/anticlockwise:   !(anticlockw)   </span>
+    <span class="k">return</span>  <span class="ow">not</span><span class="p">(</span><span class="n">anticlockw</span><span class="p">)</span></div>
+
+
+<span class="c1">###############################################################33</span>
+
+<div class="viewcode-block" id="tmagpoly2D"><a class="viewcode-back" href="../../apilist.html#mag2dpoly.mag2dpolybodies.tmagpoly2D">[docs]</a><span class="k">def</span> <span class="nf">tmagpoly2D</span><span class="p">(</span><span class="n">xzobs</span><span class="p">,</span><span class="n">Jind</span><span class="p">,</span><span class="n">Jrem</span><span class="p">,</span><span class="n">northxax</span><span class="p">,</span><span class="n">body</span><span class="p">,</span><span class="n">forwardtype</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Total magnetic field (2D) for a polygon defined by its corners. Takes into account both induced and remnant magnetization.</span>
+<span class="sd">    Based on Talwani &amp; Heitzler (1964), the default algorithm in pyMag2DPoly. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">aclockw</span> <span class="o">=</span> <span class="n">checkanticlockwiseorder</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">aclockw</span><span class="o">==</span><span class="kc">False</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;tmagforwardpoly2D(): vertices *not* ordered anticlockwise. Aborting.&quot;</span><span class="p">)</span>
+   
+    <span class="c1">##---------------------</span>
+    <span class="c1">## Get the angles</span>
+   
+    <span class="c1">## check modules</span>
+    <span class="k">assert</span> <span class="n">Jind</span><span class="o">.</span><span class="n">mod</span> <span class="o">&gt;=</span> <span class="mf">0.0</span>
+    <span class="k">assert</span> <span class="n">Jrem</span><span class="o">.</span><span class="n">mod</span> <span class="o">&gt;=</span> <span class="mf">0.0</span>
+
+    <span class="c1">## `northxax` is the angle between geographic north and the positive x axis</span>
+    <span class="k">assert</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">northxax</span> <span class="o">&lt;=</span> <span class="mf">360.0</span>
+    <span class="n">Cnorth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">northxax</span><span class="p">)</span>
+    
+    <span class="c1">## check angles</span>
+    <span class="k">assert</span> <span class="o">-</span><span class="mf">90.0</span> <span class="o">&lt;=</span> <span class="n">Jind</span><span class="o">.</span><span class="n">Ideg</span> <span class="o">&lt;=</span> <span class="mf">90.0</span>
+    <span class="k">assert</span> <span class="o">-</span><span class="mf">90.0</span> <span class="o">&lt;=</span> <span class="n">Jrem</span><span class="o">.</span><span class="n">Ideg</span> <span class="o">&lt;=</span> <span class="mf">90.0</span>
+    
+    <span class="k">assert</span> <span class="o">-</span><span class="mf">180.0</span> <span class="o">&lt;=</span> <span class="n">Jind</span><span class="o">.</span><span class="n">Ddeg</span> <span class="o">&lt;=</span> <span class="mf">180.0</span>
+    <span class="k">assert</span> <span class="o">-</span><span class="mf">180.0</span> <span class="o">&lt;=</span> <span class="n">Jrem</span><span class="o">.</span><span class="n">Ddeg</span> <span class="o">&lt;=</span> <span class="mf">180.0</span>
+
+    <span class="c1"># deg to rad</span>
+    <span class="n">Iind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">Jind</span><span class="o">.</span><span class="n">Ideg</span><span class="p">)</span>
+    <span class="n">Dind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">Jind</span><span class="o">.</span><span class="n">Ddeg</span><span class="p">)</span>
+    <span class="n">Irem</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">Jrem</span><span class="o">.</span><span class="n">Ideg</span><span class="p">)</span>
+    <span class="n">Drem</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">Jrem</span><span class="o">.</span><span class="n">Ddeg</span><span class="p">)</span>
+
+    <span class="c1"># Calculation of Jx and Jz only for case != wonbev</span>
+    <span class="n">Jtotx</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">Jtotz</span> <span class="o">=</span> <span class="n">magcomp</span><span class="p">(</span><span class="n">Jind</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span><span class="n">Iind</span><span class="p">,</span><span class="n">Dind</span><span class="p">,</span><span class="n">Jrem</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span><span class="n">Irem</span><span class="p">,</span><span class="n">Drem</span><span class="p">,</span><span class="n">Cnorth</span><span class="p">)</span>
+
+    <span class="c1">##-------------------------------------</span>
+    <span class="c1">## Loop on observation points and segments</span>
+    <span class="n">nobs</span> <span class="o">=</span> <span class="n">xzobs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">totfield</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nobs</span><span class="p">)</span>
+
+    <span class="c1">## loop on observation points</span>
+    <span class="k">for</span> <span class="n">iob</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nobs</span><span class="p">):</span>
+        
+        <span class="n">xo</span> <span class="o">=</span> <span class="n">xzobs</span><span class="p">[</span><span class="n">iob</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">zo</span> <span class="o">=</span> <span class="n">xzobs</span><span class="p">[</span><span class="n">iob</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1">## loop on segments</span>
+        <span class="n">tsum</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">ise</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">body</span><span class="o">.</span><span class="n">nsegm</span><span class="p">):</span>
+
+            <span class="n">x1</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">ver1</span><span class="p">[</span><span class="n">ise</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">xo</span>
+            <span class="n">z1</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">ver1</span><span class="p">[</span><span class="n">ise</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">zo</span>
+            <span class="n">x2</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">ver2</span><span class="p">[</span><span class="n">ise</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">xo</span>
+            <span class="n">z2</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">ver2</span><span class="p">[</span><span class="n">ise</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">zo</span>
+
+            <span class="n">tsum</span> <span class="o">+=</span> <span class="n">tmagtalwani</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="n">z2</span><span class="p">,</span><span class="n">Jtotx</span><span class="p">,</span><span class="n">Jtotz</span><span class="p">,</span><span class="n">Iind</span><span class="p">,</span><span class="n">Dind</span><span class="p">,</span><span class="n">Cnorth</span><span class="p">)</span>
+                          
+        <span class="c1"># convert field from A/m to nT</span>
+        <span class="n">totfield</span><span class="p">[</span><span class="n">iob</span><span class="p">]</span> <span class="o">=</span> <span class="n">convert_H_to_B_nT</span><span class="p">(</span> <span class="n">tsum</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">totfield</span></div>
+
+<span class="c1">#######################################################################################</span>
+
+<div class="viewcode-block" id="tmagtalwani"><a class="viewcode-back" href="../../apilist.html#mag2dpoly.mag2dpolybodies.tmagtalwani">[docs]</a><span class="k">def</span> <span class="nf">tmagtalwani</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="n">z2</span><span class="p">,</span><span class="n">Jx</span><span class="p">,</span><span class="n">Jz</span><span class="p">,</span><span class="n">Iind</span><span class="p">,</span><span class="n">Dind</span><span class="p">,</span><span class="n">C</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Total magnetic field (2D) for a line segment. Formulas from Talwani &amp; Heitzler (1964).</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+
+    <span class="c1"># Quantities for error definitions</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
+    <span class="n">small</span> <span class="o">=</span> <span class="mf">1e4</span><span class="o">*</span><span class="n">eps</span>
+    <span class="n">anglelim</span> <span class="o">=</span> <span class="mf">0.995</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+
+    <span class="c1">#--------------</span>
+    <span class="n">x21</span> <span class="o">=</span> <span class="n">x2</span><span class="o">-</span><span class="n">x1</span>
+    <span class="n">z21</span> <span class="o">=</span> <span class="n">z2</span><span class="o">-</span><span class="n">z1</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x21</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z21</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Return 0 if two corners are too close</span>
+    <span class="k">if</span> <span class="n">s</span> <span class="o">&lt;</span> <span class="n">small</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+
+    <span class="c1"># Get the angles</span>
+    <span class="n">theta1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">z1</span><span class="p">,</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">theta2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">z2</span><span class="p">,</span><span class="n">x2</span><span class="p">)</span>
+    
+    <span class="c1"># If z21 = 0.0 no contribution    </span>
+    <span class="k">if</span> <span class="n">z21</span> <span class="o">!=</span> <span class="mf">0.0</span> <span class="p">:</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="o">-</span><span class="n">x21</span><span class="o">/</span><span class="n">z21</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">_arccotangent</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+
+    <span class="n">thetadiff</span> <span class="o">=</span> <span class="n">theta2</span><span class="o">-</span><span class="n">theta1</span>
+    <span class="c1"># In the case polygon sides cross the x axis</span>
+    <span class="k">if</span> <span class="n">thetadiff</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="p">:</span>
+        <span class="n">thetadiff</span> <span class="o">=</span> <span class="n">thetadiff</span> <span class="o">+</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    <span class="k">elif</span> <span class="n">thetadiff</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="p">:</span>
+        <span class="n">thetadiff</span> <span class="o">=</span> <span class="n">thetadiff</span> <span class="o">-</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+           
+    <span class="c1"># Error if a corner is too close to the observation point (calculation continues)</span>
+    <span class="c1"># and the corner are slightly moved away</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">x1</span> <span class="o">&lt;</span> <span class="n">small</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">z1</span> <span class="o">&lt;</span> <span class="n">small</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">small</span>
+        <span class="n">z1</span> <span class="o">=</span> <span class="n">small</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;A corner is too close to an observation point (calculation continues)&quot;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">x2</span> <span class="o">&lt;</span> <span class="n">small</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">z2</span> <span class="o">&lt;</span> <span class="n">small</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">small</span>
+        <span class="n">z2</span> <span class="o">=</span> <span class="n">small</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;A corner is too close to an observation point (calculation continues)&quot;</span><span class="p">)</span>
+
+    <span class="c1">########</span>
+    <span class="n">r1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x1</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">r2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x2</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">flog</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">r1</span><span class="p">)</span>
+ 
+    <span class="c1"># Error if the side is too close to the observation point (calculation continues)</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">thetadiff</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">anglelim</span> <span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;A polygon side is too close to an observation point (calculation continues)&quot;</span><span class="p">)</span>
+
+    <span class="c1"># vertical component</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Jx</span><span class="o">*</span><span class="p">(</span> <span class="p">(</span><span class="n">thetadiff</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">*</span><span class="n">flog</span><span class="p">)</span> <span class="o">-</span> \
+                      <span class="n">Jz</span><span class="o">*</span><span class="p">(</span> <span class="p">(</span><span class="n">thetadiff</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">*</span><span class="n">flog</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1"># horizonatal component</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Jx</span><span class="o">*</span><span class="p">(</span> <span class="p">(</span><span class="n">thetadiff</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">*</span><span class="n">flog</span><span class="p">)</span> <span class="o">+</span> \
+                      <span class="n">Jz</span><span class="o">*</span><span class="p">(</span> <span class="p">(</span><span class="n">thetadiff</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">*</span><span class="n">flog</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1"># Divided by 4π to take into account algorithm formulation in emu units </span>
+    <span class="n">totfield</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="mf">4.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">H</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">Iind</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">C</span><span class="o">-</span><span class="n">Dind</span><span class="p">)</span> <span class="o">+</span> <span class="n">V</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">Iind</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">totfield</span> </div>
+
+
+<span class="c1">###########################################################################</span>
+
+<div class="viewcode-block" id="tmagpoly2Dgen"><a class="viewcode-back" href="../../apilist.html#mag2dpoly.mag2dpolybodies.tmagpoly2Dgen">[docs]</a><span class="k">def</span> <span class="nf">tmagpoly2Dgen</span><span class="p">(</span><span class="n">xzobs</span><span class="p">,</span><span class="n">Jind</span><span class="p">,</span><span class="n">Jrem</span><span class="p">,</span><span class="n">northxax</span><span class="p">,</span><span class="n">body</span><span class="p">,</span><span class="n">forwardtype</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Total magnetic field (2D) for a polygon defined by its corners. Takes into account both induced and remnant magnetization.</span>
+<span class="sd">    Generic version containing four different algorithm formulations ``forwardtype``, passed as a string:</span>
+<span class="sd">    - &quot;talwani&quot;      --&gt; Talwani &amp; Heitzler (1964)</span>
+<span class="sd">    - &quot;talwani_red&quot;  --&gt; Talwani &amp; Heitzler (1964) rederived from Kravchinsky et al. 2019</span>
+<span class="sd">    - &quot;krav&quot;         --&gt; Kravchinsky et al. (2019) rectified by Ghirotto et al. (2020)</span>
+<span class="sd">    - &quot;wonbev&quot;       --&gt; Won &amp; Bevis (1987)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">## LOOPING on segments MUST be in ANTI-CLOCKWISE order</span>
+    <span class="n">aclockw</span> <span class="o">=</span> <span class="n">checkanticlockwiseorder</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">aclockw</span><span class="o">==</span><span class="kc">False</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;tmagforwardpoly2D(): vertices *not* ordered clockwise. Aborting.&quot;</span><span class="p">)</span>
+   
+    <span class="c1">##---------------------</span>
+    <span class="c1">## Get the angles</span>
+   
+    <span class="c1">## check modules</span>
+    <span class="k">assert</span> <span class="n">Jind</span><span class="o">.</span><span class="n">mod</span> <span class="o">&gt;=</span> <span class="mf">0.0</span>
+    <span class="k">assert</span> <span class="n">Jrem</span><span class="o">.</span><span class="n">mod</span> <span class="o">&gt;=</span> <span class="mf">0.0</span>
+
+    <span class="c1">## `northxax` is the angle between geographic north and the positive x axis</span>
+    <span class="k">assert</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">northxax</span> <span class="o">&lt;=</span> <span class="mf">360.0</span>
+    <span class="n">Cnorth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">northxax</span><span class="p">)</span>
+    
+    <span class="c1">## check angles</span>
+    <span class="k">assert</span> <span class="o">-</span><span class="mf">90.0</span> <span class="o">&lt;=</span> <span class="n">Jind</span><span class="o">.</span><span class="n">Ideg</span> <span class="o">&lt;=</span> <span class="mf">90.0</span>
+    <span class="k">assert</span> <span class="o">-</span><span class="mf">90.0</span> <span class="o">&lt;=</span> <span class="n">Jrem</span><span class="o">.</span><span class="n">Ideg</span> <span class="o">&lt;=</span> <span class="mf">90.0</span>
+    
+    <span class="k">assert</span> <span class="o">-</span><span class="mf">180.0</span> <span class="o">&lt;=</span> <span class="n">Jind</span><span class="o">.</span><span class="n">Ddeg</span> <span class="o">&lt;=</span> <span class="mf">180.0</span>
+    <span class="k">assert</span> <span class="o">-</span><span class="mf">180.0</span> <span class="o">&lt;=</span> <span class="n">Jrem</span><span class="o">.</span><span class="n">Ddeg</span> <span class="o">&lt;=</span> <span class="mf">180.0</span>
+
+    <span class="c1"># check right forwardtype</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">forwardtype</span> <span class="o">!=</span> <span class="s2">&quot;talwani&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">forwardtype</span> <span class="o">!=</span> <span class="s2">&quot;talwani_red&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">forwardtype</span> <span class="o">!=</span> <span class="s2">&quot;krav&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">forwardtype</span> <span class="o">!=</span> <span class="s2">&quot;wonbev&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;tmagforwardpoly2D(): [forwardtype] must be &#39;talwani&#39; or &#39;talwani_red&#39; or &#39;krav&#39; or &#39;wonbev&#39;&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># deg to rad</span>
+    <span class="n">Iind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">Jind</span><span class="o">.</span><span class="n">Ideg</span><span class="p">)</span>
+    <span class="n">Dind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">Jind</span><span class="o">.</span><span class="n">Ddeg</span><span class="p">)</span>
+    <span class="n">Irem</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">Jrem</span><span class="o">.</span><span class="n">Ideg</span><span class="p">)</span>
+    <span class="n">Drem</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">Jrem</span><span class="o">.</span><span class="n">Ddeg</span><span class="p">)</span>
+
+    <span class="c1"># Calculation of Jx and Jz only for case != wonbev</span>
+    <span class="k">if</span> <span class="n">forwardtype</span> <span class="o">!=</span> <span class="s2">&quot;wonbev&quot;</span><span class="p">:</span>
+        <span class="n">Jtotx</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">Jtotz</span> <span class="o">=</span> <span class="n">magcomp</span><span class="p">(</span><span class="n">Jind</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span><span class="n">Iind</span><span class="p">,</span><span class="n">Dind</span><span class="p">,</span><span class="n">Jrem</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span><span class="n">Irem</span><span class="p">,</span><span class="n">Drem</span><span class="p">,</span><span class="n">Cnorth</span><span class="p">)</span>
+    
+    <span class="c1">##-------------------------------------</span>
+    <span class="c1">## Loop on observation points and segments</span>
+    <span class="n">nobs</span> <span class="o">=</span> <span class="n">xzobs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">totfield</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nobs</span><span class="p">)</span>
+
+    <span class="c1">## loop on observation points</span>
+    <span class="k">for</span> <span class="n">iob</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nobs</span><span class="p">):</span>
+        
+        <span class="n">xo</span> <span class="o">=</span> <span class="n">xzobs</span><span class="p">[</span><span class="n">iob</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">zo</span> <span class="o">=</span> <span class="n">xzobs</span><span class="p">[</span><span class="n">iob</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1">## loop on segments</span>
+        <span class="n">tsum</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">ise</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">body</span><span class="o">.</span><span class="n">nsegm</span><span class="p">):</span>
+
+            <span class="n">x1</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">ver1</span><span class="p">[</span><span class="n">ise</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">xo</span>
+            <span class="n">z1</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">ver1</span><span class="p">[</span><span class="n">ise</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">zo</span>
+            <span class="n">x2</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">ver2</span><span class="p">[</span><span class="n">ise</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">xo</span>
+            <span class="n">z2</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">ver2</span><span class="p">[</span><span class="n">ise</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">zo</span>
+
+            <span class="k">if</span> <span class="n">forwardtype</span> <span class="o">==</span> <span class="s2">&quot;talwani&quot;</span><span class="p">:</span>
+                <span class="n">tsum</span> <span class="o">+=</span> <span class="n">tmagtalwani</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="n">z2</span><span class="p">,</span><span class="n">Jtotx</span><span class="p">,</span><span class="n">Jtotz</span><span class="p">,</span><span class="n">Iind</span><span class="p">,</span><span class="n">Dind</span><span class="p">,</span><span class="n">Cnorth</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">forwardtype</span> <span class="o">==</span> <span class="s2">&quot;talwani_red&quot;</span><span class="p">:</span>
+                <span class="n">tsum</span> <span class="o">+=</span> <span class="n">tmagtalwanired</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="n">z2</span><span class="p">,</span><span class="n">Jtotx</span><span class="p">,</span><span class="n">Jtotz</span><span class="p">,</span><span class="n">Iind</span><span class="p">,</span><span class="n">Dind</span><span class="p">,</span><span class="n">Cnorth</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">forwardtype</span> <span class="o">==</span> <span class="s2">&quot;krav&quot;</span><span class="p">:</span>
+                <span class="n">tsum</span> <span class="o">+=</span> <span class="n">tmagkrav</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="n">z2</span><span class="p">,</span><span class="n">Jtotx</span><span class="p">,</span><span class="n">Jtotz</span><span class="p">,</span><span class="n">Iind</span><span class="p">,</span><span class="n">Dind</span><span class="p">,</span><span class="n">Cnorth</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">forwardtype</span> <span class="o">==</span> <span class="s2">&quot;wonbev&quot;</span><span class="p">:</span>
+                <span class="n">tsum</span> <span class="o">+=</span> <span class="n">tmagwonbev</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="n">z2</span><span class="p">,</span><span class="n">Jind</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span><span class="n">Jrem</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span><span class="n">Iind</span><span class="p">,</span><span class="n">Dind</span><span class="p">,</span><span class="n">Irem</span><span class="p">,</span><span class="n">Drem</span><span class="p">,</span><span class="n">Cnorth</span><span class="p">)</span>
+                          
+        <span class="c1"># convert field from A/m to nT</span>
+        <span class="n">totfield</span><span class="p">[</span><span class="n">iob</span><span class="p">]</span> <span class="o">=</span> <span class="n">convert_H_to_B_nT</span><span class="p">(</span> <span class="n">tsum</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">totfield</span></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="tmagkrav"><a class="viewcode-back" href="../../apilist.html#mag2dpoly.mag2dpolybodies.tmagkrav">[docs]</a><span class="k">def</span> <span class="nf">tmagkrav</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="n">z2</span><span class="p">,</span><span class="n">Jtotx</span><span class="p">,</span><span class="n">Jtotz</span><span class="p">,</span><span class="n">Iind</span><span class="p">,</span><span class="n">Dind</span><span class="p">,</span><span class="n">Cnorth</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Total magnetic field (2D) for a line segment. Formulas from Kravchinsky et al (2019) rectified by Ghirotto et al. (2021). </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># Quantities for error definitions</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
+    <span class="n">small</span> <span class="o">=</span> <span class="mf">1e4</span><span class="o">*</span><span class="n">eps</span>
+    <span class="n">anglelim</span> <span class="o">=</span> <span class="mf">0.995</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+
+    <span class="c1">#--------------</span>
+    <span class="n">x21</span> <span class="o">=</span> <span class="n">x2</span><span class="o">-</span><span class="n">x1</span>
+    <span class="n">z21</span> <span class="o">=</span> <span class="n">z2</span><span class="o">-</span><span class="n">z1</span>
+    <span class="n">tmpgamma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x21</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z21</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Return 0 if two corners are too close</span>
+    <span class="k">if</span> <span class="n">tmpgamma</span> <span class="o">&lt;</span> <span class="n">small</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+
+    <span class="c1"># check if den != 0.0</span>
+    <span class="k">if</span> <span class="n">tmpgamma</span><span class="o">!=</span><span class="mf">0.0</span> <span class="p">:</span>
+        <span class="n">gammax</span> <span class="o">=</span> <span class="n">x21</span> <span class="o">/</span> <span class="n">tmpgamma</span>
+        <span class="n">gammaz</span> <span class="o">=</span> <span class="n">z21</span> <span class="o">/</span> <span class="n">tmpgamma</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span>    
+    
+    <span class="c1"># if the segment is horizontal it provides no contribution!</span>
+    <span class="k">if</span> <span class="n">z21</span><span class="o">==</span><span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+    
+    <span class="c1">#------------</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">x21</span><span class="o">/</span><span class="n">z21</span>
+
+    <span class="k">if</span> <span class="n">x1</span> <span class="o">&gt;=</span> <span class="n">g</span><span class="o">*</span><span class="n">z1</span> <span class="p">:</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="k">elif</span> <span class="n">x1</span> <span class="o">&lt;</span> <span class="n">g</span><span class="o">*</span><span class="n">z1</span> <span class="p">:</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+
+    <span class="c1">#--------------------</span>
+    <span class="c1"># Get the angles</span>
+    <span class="n">alpha1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">delta</span><span class="o">*</span><span class="p">(</span><span class="n">z1</span><span class="o">+</span><span class="n">g</span><span class="o">*</span><span class="n">x1</span><span class="p">),(</span><span class="n">x1</span><span class="o">-</span><span class="n">g</span><span class="o">*</span><span class="n">z1</span><span class="p">))</span>
+    <span class="n">alpha2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">delta</span><span class="o">*</span><span class="p">(</span><span class="n">z2</span><span class="o">+</span><span class="n">g</span><span class="o">*</span><span class="n">x2</span><span class="p">),(</span><span class="n">x2</span><span class="o">-</span><span class="n">g</span><span class="o">*</span><span class="n">z2</span><span class="p">))</span>
+    
+    <span class="c1">#In the case polygon sides cross the x axis</span>
+    <span class="n">alphadiff</span> <span class="o">=</span> <span class="n">alpha2</span> <span class="o">-</span> <span class="n">alpha1</span>
+    <span class="k">if</span> <span class="n">alphadiff</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="p">:</span>
+        <span class="n">alphadiff</span> <span class="o">=</span> <span class="n">alphadiff</span> <span class="o">+</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    <span class="k">elif</span> <span class="n">alphadiff</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="p">:</span>
+        <span class="n">alphadiff</span> <span class="o">=</span> <span class="n">alphadiff</span> <span class="o">-</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+
+    <span class="c1"># Error if a corner is too close to the observation point (calculation continues)</span>
+    <span class="c1"># and the corner are slightly moved away</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">x1</span> <span class="o">&lt;</span> <span class="n">small</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">z1</span> <span class="o">&lt;</span> <span class="n">small</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">small</span>
+        <span class="n">z1</span> <span class="o">=</span> <span class="n">small</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;A corner is too close to an observation point (calculation continues)&quot;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">x2</span> <span class="o">&lt;</span> <span class="n">small</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">z2</span> <span class="o">&lt;</span> <span class="n">small</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">small</span>
+        <span class="n">z2</span> <span class="o">=</span> <span class="n">small</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;A corner is too close to an observation point (calculation continues)&quot;</span><span class="p">)</span>
+
+        
+    <span class="n">r1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x1</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">r2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x2</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">lor21</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">r1</span><span class="p">)</span>
+
+    <span class="c1"># Error if the side is too close to the observation point (calculation continues)</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">alphadiff</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">anglelim</span> <span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;A polygon side is too close to an observation point (calculation continues)&quot;</span><span class="p">)</span>
+  
+    <span class="c1">#--------------------</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">gammaz</span><span class="o">*</span><span class="n">gammax</span><span class="o">*</span><span class="n">lor21</span> <span class="o">+</span> <span class="n">delta</span><span class="o">*</span><span class="p">(</span><span class="n">gammaz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">alphadiff</span><span class="p">)</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="p">(</span><span class="n">gammaz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">lor21</span> <span class="o">-</span> <span class="n">delta</span><span class="o">*</span><span class="n">gammax</span><span class="o">*</span><span class="n">gammaz</span><span class="o">*</span><span class="p">(</span><span class="n">alphadiff</span><span class="p">)</span>
+    
+    <span class="c1">## horizonatl and vertical field components</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Jtotz</span><span class="o">*</span><span class="n">Q</span> <span class="o">+</span> <span class="n">Jtotx</span><span class="o">*</span><span class="n">P</span><span class="p">)</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Jtotx</span><span class="o">*</span><span class="n">Q</span> <span class="o">-</span> <span class="n">Jtotz</span><span class="o">*</span><span class="n">P</span><span class="p">)</span>
+    
+    <span class="c1">## total field anomaly </span>
+    <span class="n">totfield</span> <span class="o">=</span> <span class="n">V</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">Iind</span><span class="p">)</span><span class="o">+</span><span class="n">H</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">Iind</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">Cnorth</span><span class="o">-</span><span class="n">Dind</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">totfield</span></div>
+
+<span class="c1">########################################################################################</span>
+
+<div class="viewcode-block" id="tmagtalwanired"><a class="viewcode-back" href="../../apilist.html#mag2dpoly.mag2dpolybodies.tmagtalwanired">[docs]</a><span class="k">def</span> <span class="nf">tmagtalwanired</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="n">z2</span><span class="p">,</span><span class="n">Jx</span><span class="p">,</span><span class="n">Jz</span><span class="p">,</span><span class="n">Iind</span><span class="p">,</span><span class="n">Dind</span><span class="p">,</span><span class="n">C</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Total magnetic field (2D) for a ribbon. Talwani &amp; Heitzler (1964) modified by Kravchinsky et al. (2019).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Quantities for error definitions</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
+    <span class="n">small</span> <span class="o">=</span> <span class="mf">1e4</span><span class="o">*</span><span class="n">eps</span>
+    <span class="n">anglelim</span> <span class="o">=</span> <span class="mf">0.995</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    
+    <span class="c1">#--------------</span>
+    <span class="n">x21</span> <span class="o">=</span> <span class="n">x2</span><span class="o">-</span><span class="n">x1</span>
+    <span class="n">z21</span> <span class="o">=</span> <span class="n">z2</span><span class="o">-</span><span class="n">z1</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x21</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z21</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    
+    <span class="c1"># Return 0 if two corners are too close</span>
+    <span class="k">if</span> <span class="n">s</span> <span class="o">&lt;</span> <span class="n">small</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+
+    <span class="c1"># if the segment is horizontal it provides no contribution!</span>
+    <span class="k">if</span> <span class="n">z21</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="o">-</span><span class="n">x21</span><span class="o">/</span><span class="n">z21</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">_arccotangent</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+    
+    <span class="n">den1</span> <span class="o">=</span> <span class="n">x1</span><span class="o">+</span><span class="n">z1</span><span class="o">*</span><span class="n">_cotangent</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">den2</span> <span class="o">=</span> <span class="n">x2</span><span class="o">+</span><span class="n">z2</span><span class="o">*</span><span class="n">_cotangent</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">num1</span> <span class="o">=</span> <span class="n">z1</span><span class="o">-</span><span class="n">x1</span><span class="o">*</span><span class="n">_cotangent</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">num2</span> <span class="o">=</span> <span class="n">z2</span><span class="o">-</span><span class="n">x2</span><span class="o">*</span><span class="n">_cotangent</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+
+    <span class="c1"># Controls on signs of atan argument (abs in den1 and den2)</span>
+    <span class="c1">#-----------------------</span>
+    <span class="k">if</span> <span class="n">den1</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="p">:</span> 
+        <span class="n">den1</span> <span class="o">=</span> <span class="o">-</span><span class="n">den1</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+        <span class="n">theta1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">num1</span><span class="p">,</span><span class="n">den1</span><span class="p">)</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">theta1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">num1</span><span class="p">,</span><span class="n">den1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">den2</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="p">:</span>
+        <span class="n">den2</span> <span class="o">=</span> <span class="o">-</span><span class="n">den2</span>
+        <span class="n">theta2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">num2</span><span class="p">,</span><span class="n">den2</span><span class="p">)</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="n">theta2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">num2</span><span class="p">,</span><span class="n">den2</span><span class="p">)</span>        
+
+    <span class="c1">#-----------------------</span>
+
+    <span class="c1"># In the case polygon sides cross the x axis</span>
+    <span class="n">thetadiff</span> <span class="o">=</span> <span class="n">theta2</span><span class="o">-</span><span class="n">theta1</span>
+    <span class="k">if</span> <span class="n">thetadiff</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="p">:</span>
+        <span class="n">thetadiff</span> <span class="o">=</span> <span class="n">thetadiff</span> <span class="o">+</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    <span class="k">elif</span> <span class="n">thetadiff</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="p">:</span>
+        <span class="n">thetadiff</span> <span class="o">=</span> <span class="n">thetadiff</span> <span class="o">-</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+
+    <span class="c1"># Error if a corner is too close to the observation point (calculation continues)</span>
+    <span class="c1"># and the corner are slightly moved away</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">x1</span> <span class="o">&lt;</span> <span class="n">small</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">z1</span> <span class="o">&lt;</span> <span class="n">small</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">small</span>
+        <span class="n">z1</span> <span class="o">=</span> <span class="n">small</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;A corner is too close to an observation point (calculation continues)&quot;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">x2</span> <span class="o">&lt;</span> <span class="n">small</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">z2</span> <span class="o">&lt;</span> <span class="n">small</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">small</span>
+        <span class="n">z2</span> <span class="o">=</span> <span class="n">small</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;A corner is too close to an observation point (calculation continues)&quot;</span><span class="p">)</span>
+
+    <span class="c1">########  </span>
+    <span class="n">r1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x1</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">r2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x2</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">flog</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">r1</span><span class="p">)</span>
+    
+    <span class="c1"># Error if the side is too close to the observation point (calculation continues)</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">thetadiff</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">anglelim</span> <span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;A polygon side is too close to an observation point (calculation continues)&quot;</span><span class="p">)</span>
+
+        
+    <span class="c1"># vertical component    </span>
+    <span class="n">V</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Jx</span> <span class="o">*</span> <span class="p">(</span><span class="n">delta</span><span class="o">*</span><span class="p">(</span><span class="n">thetadiff</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">*</span><span class="n">flog</span><span class="p">)</span><span class="o">-</span> \
+                    <span class="n">Jz</span> <span class="o">*</span> <span class="p">(</span><span class="n">delta</span><span class="o">*</span><span class="p">(</span><span class="n">thetadiff</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">*</span><span class="n">flog</span><span class="p">)</span> <span class="p">)</span>
+ 
+    <span class="c1"># horizontal component</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">Jx</span> <span class="o">*</span> <span class="p">(</span><span class="n">delta</span><span class="o">*</span><span class="p">(</span><span class="n">thetadiff</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">*</span><span class="n">flog</span><span class="p">)</span><span class="o">+</span> \
+                    <span class="n">Jz</span> <span class="o">*</span> <span class="p">(</span><span class="n">delta</span><span class="o">*</span><span class="p">(</span><span class="n">thetadiff</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">*</span><span class="n">flog</span><span class="p">)</span> <span class="p">)</span>
+    
+    <span class="c1">## total field anomaly divided by 4π to take into account algorithm formulation in emu units</span>
+    <span class="n">totfield</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="mf">4.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">H</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">Iind</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">C</span><span class="o">-</span><span class="n">Dind</span><span class="p">)</span> <span class="o">+</span> <span class="n">V</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">Iind</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">totfield</span>  </div>
+
+
+<span class="c1">#######################################################################################################################</span>
+
+<div class="viewcode-block" id="tmagwonbev"><a class="viewcode-back" href="../../apilist.html#mag2dpoly.mag2dpolybodies.tmagwonbev">[docs]</a><span class="k">def</span> <span class="nf">tmagwonbev</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">z1</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="n">z2</span><span class="p">,</span><span class="n">modJind</span><span class="p">,</span><span class="n">modJrem</span><span class="p">,</span><span class="n">Iind</span><span class="p">,</span><span class="n">Dind</span><span class="p">,</span><span class="n">Irem</span><span class="p">,</span><span class="n">Drem</span><span class="p">,</span><span class="n">C</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Total magnetic field (2D) for a line segment. Formulas from Won &amp; Bevis (1987).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    
+    <span class="c1"># Quantities for error definitions</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
+    <span class="n">small</span> <span class="o">=</span> <span class="mf">1e4</span><span class="o">*</span><span class="n">eps</span>
+    <span class="n">anglelim</span> <span class="o">=</span> <span class="mf">0.995</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+
+    <span class="c1"># β is angle among North and profle direction</span>
+    <span class="n">betai</span> <span class="o">=</span> <span class="n">Dind</span> <span class="o">-</span> <span class="n">C</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">betar</span> <span class="o">=</span> <span class="n">Drem</span> <span class="o">-</span> <span class="n">C</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span>
+    
+    <span class="c1">#-------------------</span>
+    <span class="n">x21</span> <span class="o">=</span> <span class="n">x2</span><span class="o">-</span><span class="n">x1</span>
+    <span class="n">z21</span> <span class="o">=</span> <span class="n">z2</span><span class="o">-</span><span class="n">z1</span>
+
+    <span class="n">R</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x21</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z21</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="c1"># Return 0 if two corners are too close</span>
+    <span class="k">if</span> <span class="n">R</span> <span class="o">&lt;</span> <span class="n">small</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+
+    <span class="c1"># Error if a corner is too close to the observation point (calculation continues)</span>
+    <span class="c1"># and the corner are slightly moved away</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">x1</span> <span class="o">&lt;</span> <span class="n">small</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">z1</span> <span class="o">&lt;</span> <span class="n">small</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">small</span>
+        <span class="n">z1</span> <span class="o">=</span> <span class="n">small</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;A corner is too close to an observation point (calculation continues)&quot;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">x2</span> <span class="o">&lt;</span> <span class="n">small</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">z2</span> <span class="o">&lt;</span> <span class="n">small</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">small</span>
+        <span class="n">z2</span> <span class="o">=</span> <span class="n">small</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;A corner is too close to an observation point (calculation continues)&quot;</span><span class="p">)</span>
+
+    <span class="c1">###</span>
+    <span class="n">r1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x1</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">r2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x2</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">z2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">lor21</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">r1</span><span class="p">)</span>
+
+    <span class="n">theta1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">z1</span><span class="p">,</span><span class="n">x1</span><span class="p">)</span> 
+    <span class="n">theta2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">z2</span><span class="p">,</span><span class="n">x2</span><span class="p">)</span>
+
+    <span class="c1"># In the case polygon sides cross the x axis</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">z1</span><span class="p">)</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">z2</span><span class="p">):</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="n">x1</span><span class="o">*</span><span class="n">z2</span> <span class="o">-</span> <span class="n">x2</span><span class="o">*</span><span class="n">z1</span>
+        <span class="k">if</span> <span class="n">test</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="n">z1</span> <span class="o">&gt;=</span> <span class="mf">0.0</span> <span class="p">:</span>
+                <span class="n">theta2</span> <span class="o">=</span> <span class="n">theta2</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="k">elif</span> <span class="n">test</span> <span class="o">&lt;</span> <span class="mf">0.0</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="n">z2</span> <span class="o">&gt;=</span> <span class="mf">0.0</span> <span class="p">:</span>
+                <span class="n">theta1</span> <span class="o">=</span> <span class="n">theta1</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span> 
+
+    <span class="c1"># Error if the side is too close to the observation point (calculation continues)</span>
+    <span class="n">thetadiff</span> <span class="o">=</span> <span class="n">theta1</span><span class="o">-</span><span class="n">theta2</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">thetadiff</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">anglelim</span> <span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;A polygon side is too close to an observation point (calculation continues)&quot;</span><span class="p">)</span>
+
+    <span class="c1">#------------------------</span>
+    
+    <span class="n">P</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x1</span><span class="o">*</span><span class="n">z2</span> <span class="o">-</span> <span class="n">x2</span><span class="o">*</span><span class="n">z1</span><span class="p">)</span><span class="o">*</span><span class="p">(((</span><span class="n">x1</span><span class="o">*</span><span class="n">x21</span> <span class="o">-</span> <span class="n">z1</span><span class="o">*</span><span class="n">z21</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">r1</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">-</span> \
+                                 <span class="p">((</span><span class="n">x2</span><span class="o">*</span><span class="n">x21</span> <span class="o">-</span> <span class="n">z2</span><span class="o">*</span><span class="n">z21</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">r2</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span>
+
+    <span class="n">Q</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x1</span><span class="o">*</span><span class="n">z2</span> <span class="o">-</span> <span class="n">x2</span><span class="o">*</span><span class="n">z1</span><span class="p">)</span><span class="o">*</span><span class="p">(((</span><span class="n">x1</span><span class="o">*</span><span class="n">z21</span> <span class="o">+</span> <span class="n">z1</span><span class="o">*</span><span class="n">x21</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">r1</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">-</span> \
+                                 <span class="p">((</span><span class="n">x2</span><span class="o">*</span><span class="n">z21</span> <span class="o">+</span> <span class="n">z2</span><span class="o">*</span><span class="n">x21</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">r2</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span>
+    
+    <span class="k">if</span> <span class="n">x21</span> <span class="o">!=</span> <span class="mf">0.0</span> <span class="p">:</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">z21</span><span class="o">/</span><span class="n">x21</span>
+        <span class="n">derZz</span> <span class="o">=</span> <span class="p">((</span><span class="n">x21</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">*</span><span class="p">((</span><span class="n">theta1</span> <span class="o">-</span> <span class="n">theta2</span><span class="p">)</span> <span class="o">+</span> <span class="n">g</span><span class="o">*</span><span class="n">lor21</span><span class="p">)</span> <span class="o">-</span> <span class="n">P</span>
+        <span class="n">derZx</span> <span class="o">=</span> <span class="o">-</span><span class="p">((</span><span class="n">x21</span><span class="o">*</span><span class="n">z21</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">*</span><span class="p">((</span><span class="n">theta1</span> <span class="o">-</span> <span class="n">theta2</span><span class="p">)</span> <span class="o">+</span> <span class="n">g</span><span class="o">*</span><span class="n">lor21</span><span class="p">)</span> <span class="o">+</span> <span class="n">Q</span>
+        <span class="n">derXz</span> <span class="o">=</span> <span class="o">-</span><span class="p">((</span><span class="n">x21</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">g</span><span class="o">*</span><span class="p">(</span><span class="n">theta1</span> <span class="o">-</span> <span class="n">theta2</span><span class="p">)</span> <span class="o">-</span> <span class="n">lor21</span><span class="p">)</span> <span class="o">+</span> <span class="n">Q</span>
+        <span class="n">derXx</span> <span class="o">=</span> <span class="p">((</span><span class="n">x21</span><span class="o">*</span><span class="n">z21</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">g</span><span class="o">*</span><span class="p">(</span><span class="n">theta1</span> <span class="o">-</span> <span class="n">theta2</span><span class="p">)</span> <span class="o">-</span> <span class="n">lor21</span><span class="p">)</span> <span class="o">+</span> <span class="n">P</span>
+        
+    <span class="k">else</span> <span class="p">:</span>
+
+        <span class="n">derZz</span> <span class="o">=</span> <span class="o">-</span><span class="n">P</span>
+        <span class="n">derZx</span> <span class="o">=</span> <span class="o">-</span><span class="p">((</span><span class="n">z21</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">*</span><span class="n">lor21</span> <span class="o">+</span> <span class="n">Q</span>
+        <span class="n">derXz</span> <span class="o">=</span> <span class="n">Q</span>
+        <span class="n">derXx</span> <span class="o">=</span> <span class="p">((</span><span class="n">z21</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">theta1</span> <span class="o">-</span> <span class="n">theta2</span><span class="p">)</span> <span class="o">+</span> <span class="n">P</span>  
+
+    <span class="c1"># Magnetic strenght components due to induced magnetization</span>
+    <span class="n">DELTAHzind</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">modJind</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">Iind</span><span class="p">)</span><span class="o">*</span><span class="n">derZz</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">betai</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">Iind</span><span class="p">)</span><span class="o">*</span><span class="n">derZx</span><span class="p">)</span> 
+    <span class="n">DELTAHxind</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">modJind</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">Iind</span><span class="p">)</span><span class="o">*</span><span class="n">derXz</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">betai</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">Iind</span><span class="p">)</span><span class="o">*</span><span class="n">derXx</span><span class="p">)</span> 
+
+    <span class="c1"># Magnetic strenght components due to remnant magnetization</span>
+    <span class="n">DELTAHzrem</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">modJrem</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">Irem</span><span class="p">)</span><span class="o">*</span><span class="n">derZz</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">betar</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">Irem</span><span class="p">)</span><span class="o">*</span><span class="n">derZx</span><span class="p">)</span> 
+    <span class="n">DELTAHxrem</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="n">modJrem</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">Irem</span><span class="p">)</span><span class="o">*</span><span class="n">derXz</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">betar</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">Irem</span><span class="p">)</span><span class="o">*</span><span class="n">derXx</span><span class="p">)</span> 
+
+    <span class="n">DELTAHztot</span> <span class="o">=</span> <span class="n">DELTAHzind</span> <span class="o">+</span> <span class="n">DELTAHzrem</span>
+    <span class="n">DELTAHxtot</span> <span class="o">=</span> <span class="n">DELTAHxind</span> <span class="o">+</span> <span class="n">DELTAHxrem</span>
+
+    <span class="c1">## total field anomaly divided by 4π to take into account algorithm formulation in emu units</span>
+    <span class="n">DELTAHtot</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="mf">4.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">DELTAHztot</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">Iind</span><span class="p">)</span> <span class="o">+</span> <span class="n">DELTAHxtot</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">betai</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">Iind</span><span class="p">))</span>
+   
+    <span class="k">return</span> <span class="n">DELTAHtot</span></div>
+
+<span class="c1">###################################################################################</span>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Andrea Zunino, Alessandro Ghirotto.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
