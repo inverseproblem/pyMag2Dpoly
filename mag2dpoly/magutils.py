@@ -43,7 +43,7 @@ def convert_B_nT_to_H( B_nT ):
     """
     Convert from the field B (nT) to H (A/m).
     """
-    H_Am = B_nT / (pi * 400.0)
+    H_Am = B_nT / (np.pi * 400.0)
     return H_Am
 
 ###############################################
