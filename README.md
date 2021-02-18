@@ -1,5 +1,7 @@
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://inverseproblem.github.io/pyMag2Dpoly)
 ![CI](https://github.com/inverseproblem/pyMag2Dpoly/workflows/CI/badge.svg)
+[![DOI](https://zenodo.org/badge/301731802.svg)](https://zenodo.org/badge/latestdoi/301731802)
+
 
 # pyMag2Dpoly #
 
